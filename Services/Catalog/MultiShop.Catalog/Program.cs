@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using MultiShop.Catalog.Services.CategoryServices;
 using MultiShop.Catalog.Services.ProductDetailServices;
@@ -7,6 +8,20 @@ using MultiShop.Catalog.Settings;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// JWT tabanlý kimlik doðrulama servisini ekler (Varsayýlan þema: "Bearer")
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opt =>
+    {
+        // Token'ý imzalayan otoritenin URL'si (Identity Server gibi)
+        opt.Authority = builder.Configuration["IdentityServerUrl"];
+
+        // Bu API'nin adýdýr, token'daki "aud" deðeriyle eþleþmelidir
+        opt.Audience = "ResourceCatalog";
+
+        // HTTPS zorunluluðunu kapatýr (geliþtirme ortamý için true olmalý)
+        opt.RequireHttpsMetadata = false;
+    });
 
 builder.Services.AddScoped<ICategoryServices, CategoryServices>();
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -54,7 +69,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
