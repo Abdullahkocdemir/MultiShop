@@ -1,0 +1,795 @@
+﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeonShop - Neon E-Ticaret</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+            /* Neon Background Animation */
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle at 20% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(0, 255, 0, 0.05) 0%, transparent 50%);
+                z-index: -1;
+            }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #ff00ff;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+            .header::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                width: 100%;
+                height: 2px;
+                background: linear-gradient(90deg, #ff00ff, #00ffff, #00ff00, #ffff00, #ff00ff);
+                animation: neonFlow 3s linear infinite;
+            }
+
+        @@keyframes neonFlow {
+            0%
+
+        {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
+
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 15px #ff00ff, 0 0 20px #ff00ff;
+            animation: neonPulse 2s ease-in-out infinite alternate;
+        }
+
+        @@keyframes neonPulse {
+            from
+
+        {
+            text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 15px #ff00ff, 0 0 20px #ff00ff;
+        }
+
+        to {
+            text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff, 0 0 40px #ff00ff;
+        }
+
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+            .nav-links a {
+                text-decoration: none;
+                color: #fff;
+                font-weight: 600;
+                padding: 10px 20px;
+                border: 2px solid transparent;
+                border-radius: 25px;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+
+                .nav-links a:hover {
+                    color: #00ffff;
+                    border-color: #00ffff;
+                    box-shadow: 0 0 10px #00ffff, inset 0 0 10px rgba(0, 255, 255, 0.1);
+                    text-shadow: 0 0 10px #00ffff;
+                }
+
+        /* Search and Filter Section */
+        .search-filter {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00ff00;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 20px rgba(0, 255, 0, 0.05);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ffff00;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+            .search-input:focus {
+                border-color: #ffff00;
+                box-shadow: 0 0 20px rgba(255, 255, 0, 0.5), inset 0 0 10px rgba(255, 255, 0, 0.1);
+                text-shadow: 0 0 5px #ffff00;
+            }
+
+            .search-input::placeholder {
+                color: #888;
+            }
+
+        .search-btn {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
+        }
+
+            .search-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 25px rgba(255, 0, 255, 0.6), 0 0 20px #00ffff;
+            }
+
+        .filters {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #00ffff;
+            font-size: 14px;
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff00ff;
+            border-radius: 25px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .filter-select:focus {
+                border-color: #00ffff;
+                box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+                outline: none;
+            }
+
+            .filter-select option {
+                background: #000;
+                color: #fff;
+            }
+
+        .price-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .price-input {
+            width: 80px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            color: #fff;
+            text-align: center;
+            outline: none;
+        }
+
+            .price-input:focus {
+                border-color: #ffff00;
+                box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+            }
+
+        /* Products Section */
+        .products-section {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00ffff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 30px rgba(0, 255, 255, 0.05);
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #ffff00;
+            text-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00, 0 0 30px #ffff00;
+            font-weight: bold;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @@keyframes titleGlow {
+            from
+
+        {
+            text-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00, 0 0 30px #ffff00;
+        }
+
+        to {
+            text-shadow: 0 0 20px #ffff00, 0 0 30px #ffff00, 0 0 40px #ffff00, 0 0 50px #ffff00;
+        }
+
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff00ff;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+            .product-card::before {
+                content: '';
+                position: absolute;
+                top: -2px;
+                left: -2px;
+                right: -2px;
+                bottom: -2px;
+                background: linear-gradient(45deg, #ff00ff, #00ffff, #00ff00, #ffff00);
+                border-radius: 20px;
+                z-index: -1;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .product-card:hover::before {
+                opacity: 1;
+            }
+
+            .product-card:hover {
+                transform: translateY(-10px) scale(1.02);
+                box-shadow: 0 20px 40px rgba(255, 0, 255, 0.4), 0 0 30px rgba(0, 255, 255, 0.3);
+            }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3));
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            color: #fff;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-shadow: 0 0 10px currentColor;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-category {
+            color: #00ff00;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .product-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 0 5px #fff;
+        }
+
+        .product-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffff00;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px #ffff00, 0 0 10px #ffff00;
+        }
+
+        .product-rating {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 15px;
+        }
+
+        .star {
+            color: #ffff00;
+            font-size: 16px;
+            text-shadow: 0 0 5px #ffff00;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #00ff00, #00ffff);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+        }
+
+            .add-to-cart:hover {
+                background: linear-gradient(45deg, #00ffff, #ff00ff);
+                color: #fff;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(0, 255, 255, 0.6), 0 0 20px #ff00ff;
+            }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid transparent;
+            border-top: 3px solid #00ffff;
+            border-right: 3px solid #ff00ff;
+            border-bottom: 3px solid #00ff00;
+            border-left: 3px solid #ffff00;
+            border-radius: 50%;
+            animation: neonSpin 1s linear infinite;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(255, 0, 255, 0.2);
+        }
+
+        @@keyframes neonSpin {
+            0%
+
+        {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            .nav
+
+        {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .nav-links {
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .search-bar {
+            flex-direction: column;
+        }
+
+        .filters {
+            justify-content: center;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 2em;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">⚡ NEONSHOP</div>
+                <div class="nav-links">
+                    <a href="#" onclick="showCategory('all')">Tümü</a>
+                    <a href="#" onclick="showCategory('elektronik')">Elektronik</a>
+                    <a href="#" onclick="showCategory('giyim')">Giyim</a>
+                    <a href="#" onclick="showCategory('ev')">Ev & Yaşam</a>
+                    <a href="#" onclick="showCategory('spor')">Spor</a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-filter">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" placeholder="Ürün ara..." onkeyup="filterProducts()">
+                <button class="search-btn" onclick="filterProducts()">🔍 Ara</button>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Kategori</label>
+                    <select class="filter-select" id="categoryFilter" onchange="filterProducts()">
+                        <option value="all">Tümü</option>
+                        <option value="elektronik">Elektronik</option>
+                        <option value="giyim">Giyim</option>
+                        <option value="ev">Ev & Yaşam</option>
+                        <option value="spor">Spor</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Fiyat Aralığı</label>
+                    <div class="price-range">
+                        <input type="number" class="price-input" id="minPrice" placeholder="Min" onchange="filterProducts()">
+                        <span style="color: #00ffff;">-</span>
+                        <input type="number" class="price-input" id="maxPrice" placeholder="Max" onchange="filterProducts()">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Sıralama</label>
+                    <select class="filter-select" id="sortFilter" onchange="filterProducts()">
+                        <option value="name">İsme Göre</option>
+                        <option value="price-low">Fiyat (Düşük-Yüksek)</option>
+                        <option value="price-high">Fiyat (Yüksek-Düşük)</option>
+                        <option value="rating">Puana Göre</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="products-section">
+            <h2 class="section-title">⚡ NEON ÜRÜNLER ⚡</h2>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="color: #00ffff;">Ürünler yükleniyor...</p>
+            </div>
+
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample product data
+        const products = [
+            {
+                id: 1,
+                name: "Gaming Laptop",
+                category: "elektronik",
+                price: 45999,
+                rating: 4.8,
+                image: "💻",
+                badge: "YENİ"
+            },
+            {
+                id: 2,
+                name: "Neon LED Klavye",
+                category: "elektronik",
+                price: 1299,
+                rating: 4.9,
+                image: "⌨️",
+                badge: "POPÜLER"
+            },
+            {
+                id: 3,
+                name: "RGB Gaming Mouse",
+                category: "elektronik",
+                price: 899,
+                rating: 4.6,
+                image: "🖱️",
+                badge: "İNDİRİM"
+            },
+            {
+                id: 4,
+                name: "Neon Hoodie",
+                category: "giyim",
+                price: 599,
+                rating: 4.4,
+                image: "👕",
+                badge: ""
+            },
+            {
+                id: 5,
+                name: "OLED Smart TV",
+                category: "elektronik",
+                price: 25999,
+                rating: 4.7,
+                image: "📺",
+                badge: "YENİ"
+            },
+            {
+                id: 6,
+                name: "LED Spor Ayakkabı",
+                category: "spor",
+                price: 1799,
+                rating: 4.5,
+                image: "👟",
+                badge: ""
+            },
+            {
+                id: 7,
+                name: "Holographic Elbise",
+                category: "giyim",
+                price: 899,
+                rating: 4.2,
+                image: "👗",
+                badge: "İNDİRİM"
+            },
+            {
+                id: 8,
+                name: "RGB Strip Light",
+                category: "ev",
+                price: 299,
+                rating: 4.3,
+                image: "💡",
+                badge: ""
+            },
+            {
+                id: 9,
+                name: "Neon Saatli Hoparlör",
+                category: "ev",
+                price: 1999,
+                rating: 4.8,
+                image: "🔊",
+                badge: "POPÜLER"
+            },
+            {
+                id: 10,
+                name: "Gaming Console",
+                category: "elektronik",
+                price: 18999,
+                rating: 4.9,
+                image: "🎮",
+                badge: "YENİ"
+            },
+            {
+                id: 11,
+                name: "Cyber Ceket",
+                category: "giyim",
+                price: 1299,
+                rating: 4.1,
+                image: "🧥",
+                badge: ""
+            },
+            {
+                id: 12,
+                name: "LED Yoga Mat",
+                category: "spor",
+                price: 599,
+                rating: 4.4,
+                image: "🧘",
+                badge: "İNDİRİM"
+            }
+        ];
+
+        let filteredProducts = [...products];
+
+        function renderProducts(productsToRender) {
+            const grid = document.getElementById('productsGrid');
+
+            if (productsToRender.length === 0) {
+                grid.innerHTML = '<div style="text-align: center; padding: 40px; color: #ff00ff; font-size: 1.2em; text-shadow: 0 0 10px #ff00ff;">Aradığınız kriterlere uygun ürün bulunamadı. ⚡</div>';
+                return;
+            }
+
+            grid.innerHTML = productsToRender.map(product => `
+                <div class="product-card" data-category="${product.category}">
+                    <div class="product-image">
+                        ${product.image}
+                        ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${product.category.toUpperCase()}</div>
+                        <div class="product-title">${product.name}</div>
+                        <div class="product-price">₺${product.price.toLocaleString()}</div>
+                        <div class="product-rating">
+                            ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5 - Math.floor(product.rating))}
+                            <span style="margin-left: 5px; color: #00ffff;">(${product.rating})</span>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart(${product.id})">⚡ Sepete Ekle</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterProducts() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+
+            setTimeout(() => {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                const categoryFilter = document.getElementById('categoryFilter').value;
+                const minPrice = parseInt(document.getElementById('minPrice').value) || 0;
+                const maxPrice = parseInt(document.getElementById('maxPrice').value) || Infinity;
+                const sortFilter = document.getElementById('sortFilter').value;
+
+                filteredProducts = products.filter(product => {
+                    const matchesSearch = product.name.toLowerCase().includes(searchTerm);
+                    const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
+                    const matchesPrice = product.price >= minPrice && product.price <= maxPrice;
+
+                    return matchesSearch && matchesCategory && matchesPrice;
+                });
+
+                // Sort products
+                filteredProducts.sort((a, b) => {
+                    switch(sortFilter) {
+                        case 'price-low':
+                            return a.price - b.price;
+                        case 'price-high':
+                            return b.price - a.price;
+                        case 'rating':
+                            return b.rating - a.rating;
+                        case 'name':
+                        default:
+                            return a.name.localeCompare(b.name);
+                    }
+                });
+
+                loading.style.display = 'none';
+                renderProducts(filteredProducts);
+            }, 800);
+        }
+
+        function showCategory(category) {
+            document.getElementById('categoryFilter').value = category;
+            filterProducts();
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+
+            // Neon effect for button
+            const buttons = document.querySelectorAll('.add-to-cart');
+            buttons.forEach(btn => {
+                if (btn.onclick.toString().includes(productId)) {
+                    btn.style.animation = 'neonFlash 0.5s ease';
+                    setTimeout(() => {
+                        btn.style.animation = '';
+                    }, 500);
+                }
+            });
+
+            alert(`⚡ "${product.name}" sepete eklendi! ⚡`);
+        }
+
+        // Initialize page
+        renderProducts(products);
+
+        // Add neon flash animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes neonFlash {
+                0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.4); }
+                50% {
+                    box-shadow:
+                        0 0 30px rgba(0, 255, 0, 0.8),
+                        0 0 40px rgba(0, 255, 255, 0.6),
+                        0 0 50px rgba(255, 0, 255, 0.4);
+                }
+            }
+
+            @@keyframes fadeInNeon {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                    filter: blur(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                    filter: blur(0);
+                }
+            }
+
+            .product-card {
+                animation: fadeInNeon 0.8s ease forwards;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add staggered animation to cards
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.product-card');
+                cards.forEach((card, index) => {
+                    card.style.animationDelay = `${index * 0.1}s`;
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>

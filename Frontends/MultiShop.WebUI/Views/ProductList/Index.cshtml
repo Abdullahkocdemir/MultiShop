@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/UILayout/_UILayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" href="#">AnaSayfa</a>
+                <a class="breadcrumb-item text-dark" href="#">Ürünler</a>
+                <span class="breadcrumb-item active">Ürün Listesi</span>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-lg-3 col-md-4">
+            <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Fiyata Göre Filtreleme</span></h5>
+
+            @await Component.InvokeAsync("_ProductListPriceFilterComponentsPartial")
+            <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Renge Göre Filtreleme</span></h5>
+
+            @await Component.InvokeAsync("_ProductListColorFilterComponentsPartial")
+
+            <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Bedene Göre Filtreleme</span></h5>
+            @await Component.InvokeAsync("_ProductListSizeFilterComponentsPartial")
+        </div>
+        <div class="col-lg-9 col-md-8">
+            <div class="row pb-3">
+                @await Component.InvokeAsync("_ProductListGetProductCountComponentsPartial")
+
+                @await Component.InvokeAsync("_ProductListComponentPartial")
+                <div class="col-12">
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled"><a class="page-link" href="#">Previous</span></a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
