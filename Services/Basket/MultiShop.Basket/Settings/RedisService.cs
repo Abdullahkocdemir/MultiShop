@@ -2,27 +2,29 @@
 
 namespace MultiShop.Basket.Settings
 {
-    public class RedisService
+    public class RedisService : IDisposable
     {
         private readonly string _host;
         private readonly int _port;
-        private ConnectionMultiplexer _connectionMultiplexer;
+        private ConnectionMultiplexer? _connectionMultiplexer;
+        private readonly object _lockObject = new object();
 
-        public RedisService(string host, int port, ConnectionMultiplexer connectionMultiplexer)
+        public RedisService(string host, int port)
         {
             _host = host;
             _port = port;
-            _connectionMultiplexer = connectionMultiplexer;
         }
-
-
 
         // Redis'e bağlan
         public void Connect()
         {
-            if (_connectionMultiplexer == null || !_connectionMultiplexer.IsConnected)
+            lock (_lockObject)
             {
-                _connectionMultiplexer = ConnectionMultiplexer.Connect($"{_host}:{_port}");
+                if (_connectionMultiplexer == null || !_connectionMultiplexer.IsConnected)
+                {
+                    // Fixed: Removed asterisks and used proper field names
+                    _connectionMultiplexer = ConnectionMultiplexer.Connect($"{_host}:{_port}");
+                }
             }
         }
 
@@ -33,7 +35,18 @@ namespace MultiShop.Basket.Settings
             {
                 Connect();
             }
-            return _connectionMultiplexer!.GetDatabase(0);
+
+            return _connectionMultiplexer!.GetDatabase(db);
         }
+
+        // Proper disposal implementation
+        public void Dispose()
+        {
+            _connectionMultiplexer?.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        // Check connection status
+        public bool IsConnected => _connectionMultiplexer?.IsConnected ?? false;
     }
 }
