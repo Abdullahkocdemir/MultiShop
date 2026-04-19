@@ -1,0 +1,24 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+    @await Component.InvokeAsync("_AdminLayoutHeadViewComponentPartial")
+
+<body class="sidebar-mini">
+    <div class="wrapper">
+
+        @await Component.InvokeAsync("_AdminLayoutHeaderViewComponentPartial")
+
+        @await Component.InvokeAsync("_AdminLayoutSideBarViewComponentPartial")
+
+        <div class="content-wrapper">
+            @await Component.InvokeAsync("_AdmimLayoutMainSectionViewBagViewComponentPartial")
+            @RenderBody()
+        </div>
+        @await Component.InvokeAsync("_AdminLayoutFooterViewComponentPartial")
+    </div>
+    @await Component.InvokeAsync("_AdminLayoutScriptViewComponentPartial")
+</body>
+</html>
