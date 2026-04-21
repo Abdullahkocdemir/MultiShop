@@ -1,17 +1,62 @@
-﻿<aside class="main-sidebar dark-bg">
+﻿<aside class="main-sidebar dark-bg" style="background-color: #1a1a1a; min-height: 100vh;">
     <section class="sidebar">
-        <div class="user-panel black-bg">
-            <div class="pull-left image"> <img src="~/MainDownload-OvioAdmin-html5-template/html/dist/img/img1.jpg" class="img-circle" alt="User Image"> </div>
+        <div class="user-panel black-bg" style="padding: 15px; border-bottom: 1px solid #333;">
+            <div class="pull-left image">
+                <img src="~/images/logos/manlogo.jpg" class="img-circle" alt="User Image" style="border: 2px solid #444;">
+            </div>
             <div class="pull-left info">
-                <p>MultiShop Admin</p>
-                <a href="#"><i class="fa fa-circle"></i> Online</a>
+                <p style="color: #fff; font-weight: 600; margin-bottom: 5px;">MultiShop Admin</p>
+                <a href="#" style="font-size: 11px;"><i class="fa fa-circle text-success"></i> Çevrimiçi</a>
             </div>
         </div>
-        <!-- Sidebar Menu -->
-        <ul class="sidebar-menu" data-widget="tree">
-            <li class="header dark-bg">Menu</li>
-            <li> <a href="#"> <i class="fa fa-th"></i> <span>Widgets</span></a> </li>
+
+        <ul class="sidebar-menu" data-widget="tree" style="margin-top: 10px;">
+            <li class="header dark-bg" style="color: #666; padding: 10px 15px; font-size: 12px; text-transform: uppercase;">
+                YÖNETİM PANELİ
+            </li>
+
+            <li>
+                <a href="/Admin/Dashboard/Index/">
+                    <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/Admin/Category/Index/">
+                    <i class="fa fa-tags"></i> <span>Kategoriler</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/Admin/Product/Index/">
+                    <i class="fa fa-cubes"></i> <span>Ürünler</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/Admin/Setting/Index/">
+                    <i class="fa fa-cogs"></i> <span>Ayarlar</span>
+                </a>
+            </li>
         </ul>
-        <!-- sidebar-menu -->
     </section>
 </aside>
+
+<style>
+    .sidebar-menu li a {
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+    }
+
+    .sidebar-menu li:hover a {
+        background: rgba(255, 255, 255, 0.05) !important;
+        color: #fff !important;
+        border-left-color: #00c0ef;
+    }
+
+    .sidebar-menu li a i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+</style>

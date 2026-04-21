@@ -1,0 +1,112 @@
+﻿@model MultiShop.DTOLayer.CatalogDTOs.ProductDTO.UpdateProductDTO
+@{
+    ViewData["Title"] = "Ürün Güncelle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+<style>
+    .form-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        padding: 35px;
+    }
+
+    .select2-container--bootstrap-5 .select2-selection {
+        border-radius: 8px;
+        padding: 6px;
+        border: 1px solid #dee2e6;
+    }
+
+    .preview-img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 2px dashed #ddd;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="form-card">
+        <h4 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-pen-nib me-2"></i>Ürün Bilgilerini Güncelle</h4>
+
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="ProductId" />
+            <input type="hidden" asp-for="ProductImageUrl" /> <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label fw-semibold">Ürün Adı</label>
+                    <input type="text" asp-for="ProductName" class="form-control form-control-lg" style="border-radius: 8px;">
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <label class="form-label fw-semibold">Kategori</label>
+                    @Html.DropDownListFor(x => x.CategoryId, (List<SelectListItem>)ViewBag.CategoryList, new { @class = "form-select select-search" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label class="form-label fw-semibold">Fiyat (₺)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">₺</span>
+                        <input type="number" step="0.01" asp-for="ProductPrice" class="form-control">
+                    </div>
+                </div>
+
+                <div class="col-md-8 mb-4">
+                    <label class="form-label fw-semibold">Ürün Görseli</label>
+                    <div class="d-flex align-items-start gap-3">
+                        <img id="imgPreview" src="@Model.ProductImageUrl" class="preview-img" />
+                        <div class="flex-grow-1">
+                            <input type="file" name="file" id="fileInput" class="form-control" accept="image/*">
+                            <small class="text-muted">Yeni bir görsel seçerek değiştirebilirsiniz.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Ürün Açıklaması</label>
+                <textarea asp-for="ProductDescription" class="form-control" rows="4" style="border-radius: 8px;"></textarea>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <button type="submit" class="btn btn-primary px-5 py-2 fw-bold" style="border-radius: 30px; background: #6f42c1; border: none;">
+                    Güncelleştirmeleri Kaydet
+                </button>
+                <a href="/Admin/Product/Index" class="text-decoration-none text-muted fw-semibold">Vazgeç</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Select2 Arama Özelliğini Aktif Etme
+        $('.select-search').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Kategori ara...',
+            allowClear: true
+        });
+
+        // Görsel Önizleme Scripti
+        $('#fileInput').change(function() {
+            const file = this.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    $('#imgPreview').attr('src', event.target.result);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>

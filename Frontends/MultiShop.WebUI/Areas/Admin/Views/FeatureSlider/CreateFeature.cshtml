@@ -1,0 +1,63 @@
+﻿@model MultiShop.DTOLayer.CatalogDTOs.FeatureDTO.CreateFeatureDTO
+
+@{
+    ViewData["Title"] = "Yeni Öne Çıkan Ekle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="row justify-content-start">
+    <div class="col-md-8">
+        <div class="form-card" style="background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 30px; margin-top: 20px;">
+            <h3 class="mb-1">Yeni Öne Çıkan Ekle</h3>
+            <p class="text-muted small mb-4">Slider alanına eklenecek resmi ve metinleri belirleyin.</p>
+
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Başlık</label>
+                    <input type="text" asp-for="Title" class="form-control" placeholder="Örn: 2024 Yaz Koleksiyonu" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Açıklama</label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Kısa bir açıklama yazın..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Slider Görseli</label>
+                    <input type="file" name="ImageFile" class="form-control" accept="image/*" onchange="showPreview(this)" required>
+                    <div class="mt-3">
+                        <small class="text-muted d-block mb-2">Görsel Önizleme:</small>
+                        <img id="imgPreview" src="#" style="display:none; width:100%; max-width:300px; border-radius:10px; border:2px dashed #ddd; padding:5px;" />
+                    </div>
+                </div>
+
+                <div class="mb-4 mt-4">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" asp-for="Status" checked>
+                        <label class="form-check-label fw-bold">Aktif Durumda Başlat</label>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-5" style="border-radius: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border:none;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Kaydet ve Yükle
+                    </button>
+                    <a href="/Admin/Feature/Index" class="btn btn-outline-secondary px-4" style="border-radius: 30px;">Vazgeç</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showPreview(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imgPreview').src = e.target.result;
+                document.getElementById('imgPreview').style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

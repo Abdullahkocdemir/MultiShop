@@ -1,0 +1,120 @@
+﻿@model MultiShop.DTOLayer.CatalogDTOs.ProductDTO.CreateProductDTO
+@{
+    ViewData["Title"] = "Yeni Ürün";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+    var categoryList = ViewBag.CategoryList as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+<style>
+    .form-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        padding: 35px;
+    }
+
+    .select2-container--bootstrap-5 .select2-selection {
+        border-radius: 8px;
+        padding: 6px;
+        border: 1px solid #dee2e6;
+        height: calc(3.5rem + 2px);
+    }
+
+    .preview-img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 2px dashed #ddd;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="form-card">
+        <h3 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-plus-circle me-2"></i>Yeni Ürün Ekle</h3>
+
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="ProductImageUrl" value="temp" />
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label fw-bold">Ürün Adı</label>
+                    <input type="text" asp-for="ProductName" class="form-control form-control-lg" placeholder="Örn: Pamuklu Kazak" required style="border-radius: 8px;">
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <label class="form-label fw-bold">Ürün Kategorisi</label>
+                    @Html.DropDownListFor(x => x.CategoryId, categoryList, "Kategori Seçiniz", new { @class = "form-select select-search" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label class="form-label fw-bold">Fiyat (₺)</label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-light text-primary fw-bold">₺</span>
+                        <input type="number" step="0.01" asp-for="ProductPrice" class="form-control" required style="border-radius: 0 8px 8px 0;">
+                    </div>
+                </div>
+
+                <div class="col-md-8 mb-4">
+                    <label class="form-label fw-bold">Ürün Görseli</label>
+                    <div class="d-flex align-items-start gap-3">
+                        <div id="previewContainer" class="preview-img text-center">
+                            <img id="imgPreview" src="" class="d-none w-100 h-100" style="border-radius: 8px; object-fit: cover;" />
+                            <i id="imgIcon" class="fa-solid fa-image fa-2x text-muted"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <input type="file" name="file" id="fileInput" class="form-control form-control-lg" accept="image/*" required>
+                            <small class="text-muted">Ürün görselini buradan yükleyin.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">Ürün Açıklaması</label>
+                <textarea asp-for="ProductDescription" class="form-control" rows="4" placeholder="Ürün özelliklerini detaylıca girin..." style="border-radius: 8px;"></textarea>
+            </div>
+
+            <div class="d-flex gap-3 pt-3">
+                <button type="submit" class="btn btn-primary px-5 py-3 rounded-pill fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border:none; box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);">
+                    <i class="fa-solid fa-floppy-disk me-2"></i>Ürünü Kaydet
+                </button>
+                <a href="/Admin/Product/Index" class="btn btn-outline-secondary px-5 py-3 rounded-pill fw-bold">Vazgeç</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('.select-search').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Kategori ara...',
+            allowClear: true
+        });
+
+        $('#fileInput').change(function() {
+            const file = this.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    $('#imgPreview').attr('src', event.target.result).removeClass('d-none');
+                    $('#imgIcon').addClass('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>

@@ -1,0 +1,241 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<MultiShop.DTOLayer.CatalogDTOs.ProductDTO.ResultProductWithCategoryDTO>
+
+@{
+    ViewData["Title"] = "Ürün Listesi";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+    int count = (Model.PageNumber - 1) * Model.PageSize;
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .product-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 25px;
+        margin-top: 20px;
+    }
+
+    .table thead th {
+        background-color: #f8f9fa;
+        color: #333;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 11px;
+        border-bottom: 2px solid #dee2e6;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 10px 25px;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+        .btn-create:hover {
+            opacity: 0.9;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.3);
+        }
+
+    .product-img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+
+    .category-badge {
+        background-color: #f0f2f5;
+        color: #667eea;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        border: 1px solid #e0e0e0;
+    }
+
+    .pagination-container {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination {
+        display: flex;
+        padding-left: 0;
+        list-style: none;
+        border-radius: 0.25rem;
+    }
+
+    .page-item .page-link {
+        border: 1px solid #dee2e6;
+        padding: 8px 16px;
+        margin: 0 3px;
+        color: #764ba2;
+        background-color: #fff;
+        border-radius: 6px;
+        transition: all 0.2s ease-in-out;
+        text-decoration: none;
+    }
+
+    .page-item.active .page-link {
+        background-color: #764ba2;
+        border-color: #764ba2;
+        color: white;
+        box-shadow: 0 3px 6px rgba(118, 75, 162, 0.2);
+    }
+
+    .page-item .page-link:hover:not(.active) {
+        background-color: #f1edff;
+        border-color: #764ba2;
+    }
+
+    .category-badge {
+        background-color: #f0f2f5;
+        color: #667eea;
+        font-weight: 700; 
+        padding: 8px 16px; 
+        border-radius: 20px;
+        font-size: 0.95rem; 
+        border: 1px solid #e0e0e0;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+        .category-badge i {
+            font-size: 0.9rem;
+            margin-right: 5px;
+        }
+</style>
+
+<div class="product-card">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1" style="color: #4a4a4a;">Ürün Yönetimi</h3>
+            <p class="text-muted small mb-0">Katalogdaki tüm ürünleri kategori bazlı görebilir ve yönetebilirsiniz.</p>
+        </div>
+        <a href="/Admin/Product/CreateProduct/" class="btn btn-create">
+            <i class="fa-solid fa-plus me-2"></i> Yeni Ürün Ekle
+        </a>
+    </div>
+    <br />
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th style="width: 80px;">Görsel</th>
+                    <th>Ürün Adı</th>
+                    <th>Kategori</th>
+                    <th>Fiyat</th>
+                    <th class="text-center" style="width: 250px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        count++;
+                        <tr>
+                            <td><span class="badge bg-light text-dark shadow-sm">@count</span></td>
+                            <td>
+                                <img src="@item.ProductImageUrl" class="product-img" onerror="this.src='/images/no-image.png'" alt="@item.ProductName" />
+                            </td>
+                            <td class="fw-bold text-dark">@item.ProductName</td>
+                            <td>
+                                <span class="category-badge">
+                                    <i class="fa-solid fa-layer-group me-1 small"></i>
+                                    @(string.IsNullOrEmpty(item.CategoryName) ? "Kategorisiz" : item.CategoryName)
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-success fw-bold">@item.ProductPrice.ToString("C2")</span>
+                            </td>
+                            <td class="text-center">
+                                <a href="/Admin/Product/UpdateProduct/@item.ProductId" class="btn btn-outline-primary btn-sm rounded-pill px-3 me-1">
+                                    <i class="fa-solid fa-pen-to-square me-1"></i> Düzenle
+                                </a>
+                                <button onclick="deleteProduct('@item.ProductId', '@item.ProductName')" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                    <i class="fa-solid fa-trash me-1"></i> Sil
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fa-solid fa-box-open fa-4x mb-3 d-block opacity-50"></i>
+                                <h5 class="fw-normal">Henüz kayıtlı bir ürün bulunamadı.</h5>
+                                <p class="small">Yeni bir ürün ekleyerek başlayabilirsiniz.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model != null && Model.PageCount > 1)
+    {
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+            {
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" },
+                DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                MaximumPageNumbersToDisplay = 5,
+                UlElementClasses = new string[] { "pagination" }
+                })
+    </div>
+        }
+</div>
+
+<script>
+    function deleteProduct(id, name) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: `"${name}" isimli ürünü silmek istediğinize emin misiniz?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#764ba2',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'Vazgeç'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/Admin/Product/DeleteProduct/" + id;
+            }
+        });
+    }
+
+    @if (TempData["DeleteSuccess"] != null)
+    {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Başarılı!',
+                    text: '@TempData["DeleteSuccess"]',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                </text>
+    }
+</script>
