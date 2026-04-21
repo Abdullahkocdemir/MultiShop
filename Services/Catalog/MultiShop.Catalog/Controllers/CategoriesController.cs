@@ -52,5 +52,17 @@ namespace MultiShop.Catalog.Controllers
             await _categoryService.UpdateCategoryAsync(updateCategoryDTO);
             return Ok("Kategori başarıyla güncellendi");
         }
+        [HttpPost("CategoryStatusTrue")]
+        public async Task<IActionResult> CategoryStatusTrue(string id)
+        {
+            await _categoryService.StatusChangeCategoryTrueAsync(id);
+            return Ok("Kategori Statüsü Başarılı Bir Şekilde Güncellendi.!");
+        }
+        [HttpPost("CategoryStatusFalse")]
+        public async Task<IActionResult> CategoryStatusFalse(string id)
+        {
+            await _categoryService.StatusChangeCategoryFalseAsync(id);
+            return Ok("Kategori Statüsü Başarılı Bir Şekilde Güncellendi.!");
+        }
     }
 }

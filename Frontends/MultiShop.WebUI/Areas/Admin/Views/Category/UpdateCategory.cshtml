@@ -1,11 +1,9 @@
 ﻿@model UpdateCategoryDTO
 
 @{
-    ViewData["Title"] = "UpdateCategory";
+    ViewData["Title"] = "Kategori Güncelle";
     Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
 }
-
-
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
@@ -37,13 +35,37 @@
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
 
+    .preview-container {
+        text-align: center;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 2px dashed #eee;
+        border-radius: 12px;
+        background-color: #fafafa;
+    }
+
+    #imagePreview {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+        cursor: pointer;
+    }
+
     .btn-save {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
         padding: 12px 30px;
         border-radius: 30px;
-        font-weight: 500;
+        font-weight: 600;
         transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
@@ -54,7 +76,7 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
             color: white;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
     .btn-back {
@@ -69,17 +91,18 @@
 
 <div class="row justify-content-start">
     <div class="col-md-8">
-        <div class="form-card" style="background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 30px; margin-top: 20px;">
+        <div class="form-card">
             <div class="mb-4">
-                <h3 class="mb-1">Kategori Güncelle</h3>
-                <p class="text-muted small">Mevcut kategoriyi düzenlemek için aşağıdaki alanları kullanın.</p>
+                <h3 class="mb-1" style="font-weight: 700;">Kategori Düzenle</h3>
+                <p class="text-muted small">Mevcut kategori bilgilerini, görselini ve aktiflik durumunu güncelleyin.</p>
             </div>
 
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 <input type="hidden" asp-for="CategoryId" />
+                <input type="hidden" asp-for="ImageUrl" />
 
                 <div class="mb-4">
-                    <label asp-for="CategoryName" class="form-label" style="font-weight: 600;">Kategori Adı</label>
+                    <label asp-for="CategoryName" class="form-label">Kategori Adı</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="fa-solid fa-tag text-muted"></i>
@@ -89,11 +112,40 @@
                     <span asp-validation-for="CategoryName" class="text-danger small"></span>
                 </div>
 
+                <div class="mb-4">
+                    <label class="form-label text-primary">Görsel İşlemleri</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fa-solid fa-image text-muted"></i>
+                        </span>
+                        <input type="file" name="ImageFile" id="imageInput" class="form-control border-start-0" accept="image/*">
+                    </div>
+
+                    <div class="preview-container">
+                        <p class="text-muted small mb-2">Görsel Önizleme</p>
+                        <img id="imagePreview" src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/Category/no-image.png" : Model.ImageUrl)" alt="Kategori Görseli" />
+                        <div class="mt-2 text-muted small">Mevcut görseli değiştirmek istemiyorsanız dosya seçmeyin.</div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label d-block">Kategori Durumu</label>
+                    <div class="form-check form-switch d-flex align-items-center gap-3" style="padding-left: 3.5em;">
+                        <input class="form-check-input" type="checkbox" asp-for="IsActive" id="statusSwitch">
+                        <label class="form-check-label fw-bold @(Model.IsActive ? "text-primary" : "text-danger")" for="statusSwitch" id="statusLabel">
+                            @(Model.IsActive ? "Aktif" : "Pasif")
+                        </label>
+                    </div>
+                    <p class="text-muted small mt-1">Pasif durumdaki kategoriler kullanıcı arayüzünde listelenmez.</p>
+                </div>
+
+                <hr class="my-4" style="opacity: 0.1;">
+
                 <div class="d-flex gap-2 pt-2">
-                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border:none; border-radius: 30px; padding: 12px 30px;">
+                    <button type="submit" class="btn btn-save">
                         <i class="fa-solid fa-arrows-rotate"></i> Değişiklikleri Kaydet
                     </button>
-                    <a href="/Admin/Category/Index" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 12px 25px;">
+                    <a href="/Admin/Category/Index" class="btn btn-outline-secondary btn-back">
                         <i class="fa-solid fa-arrow-left"></i> Vazgeç
                     </a>
                 </div>
@@ -102,4 +154,27 @@
     </div>
 </div>
 
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
 
+    imageInput.onchange = evt => {
+        const [file] = imageInput.files;
+        if (file) {
+            imagePreview.src = URL.createObjectURL(file);
+        }
+    }
+
+    const statusSwitch = document.getElementById('statusSwitch');
+    const statusLabel = document.getElementById('statusLabel');
+
+    statusSwitch.addEventListener('change', function() {
+        if (this.checked) {
+            statusLabel.innerText = "Aktif";
+            statusLabel.className = "form-check-label fw-bold text-primary";
+        } else {
+            statusLabel.innerText = "Pasif";
+            statusLabel.className = "form-check-label fw-bold text-danger";
+        }
+    });
+</script>

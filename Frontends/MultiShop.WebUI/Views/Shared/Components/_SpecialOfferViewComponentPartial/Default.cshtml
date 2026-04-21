@@ -1,18 +1,24 @@
-﻿<div class="col-lg-4">
-    <div class="product-offer mb-30" style="height: 200px;">
-        <img class="img-fluid" src="~/online-shop-website-template/img/offer-1.jpg" alt="Kampanya 1">
-        <div class="offer-text">
-            <h6 class="text-white text-uppercase">%20 Tasarruf Edin</h6>
-            <h3 class="text-white mb-3">Özel Teklif</h3>
-            <a href="" class="btn btn-primary">Hemen Al</a>
+﻿@model List<MultiShop.DTOLayer.CatalogDTOs.SpecialOfferDTO.ResultSpecialOfferDTO>
+
+<div class="col-lg-4">
+    @if (Model != null && Model.Count > 0)
+    {
+        @foreach (var item in Model)
+        {
+            <div class="product-offer mb-30" style="height: 200px;">
+                <img class="img-fluid" src="@item.ImageUrl" alt="@item.Title">
+                <div class="offer-text">
+                    <h6 class="text-white text-uppercase">@item.SubTitle</h6>
+                    <h3 class="text-white mb-3">@item.Title</h3>
+                    <a href="" class="btn btn-primary">Hemen Al</a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-center p-4 bg-white rounded shadow-sm">
+            <p class="text-muted">Aktif kampanya bulunamadı.</p>
         </div>
-    </div>
-    <div class="product-offer mb-30" style="height: 200px;">
-        <img class="img-fluid" src="~/online-shop-website-template/img/offer-2.jpg" alt="Kampanya 2">
-        <div class="offer-text">
-            <h6 class="text-white text-uppercase">%20 İndirim</h6>
-            <h3 class="text-white mb-3">Günün Fırsatı</h3>
-            <a href="" class="btn btn-primary">İncele</a>
-        </div>
-    </div>
+    }
 </div>

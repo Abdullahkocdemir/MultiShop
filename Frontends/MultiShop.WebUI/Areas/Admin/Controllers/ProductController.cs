@@ -41,7 +41,6 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
         {
             var client = _httpClientFactory.CreateClient();
 
-            // ÖNEMLİ: Daha önce yazdığımız CategoryName dolu gelen endpoint'i çağırıyoruz
             var responseMessage = await client.GetAsync("https://localhost:7001/api/Products/ProductListWithCategory");
 
             if (responseMessage.IsSuccessStatusCode)
@@ -49,7 +48,6 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
                 var jsonData = await responseMessage.Content.ReadAsStringAsync();
                 var values = JsonConvert.DeserializeObject<List<ResultProductWithCategoryDTO>>(jsonData);
 
-                // Her sayfada 5 ürün gösterelim (İsteğine göre değiştirebilirsin)
                 return View(values.ToPagedList(page, 5));
             }
             return View();

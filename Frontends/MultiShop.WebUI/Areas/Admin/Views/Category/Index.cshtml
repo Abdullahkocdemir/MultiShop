@@ -6,7 +6,6 @@
     int count = 0;
 }
 
-@* Gerekli Kütüphaneler *@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -25,43 +24,82 @@
         color: #333;
         font-weight: 600;
         text-transform: uppercase;
-        font-size: 13px;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+    }
+
+    .category-img {
+        width: 45px;
+        height: 45px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 2px solid #f0f0f0;
+        transition: transform 0.2s;
+    }
+
+        .category-img:hover {
+            transform: scale(1.1);
+        }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 30px;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-transform: uppercase;
+    }
+
+    .status-active {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #c8e6c9;
+    }
+
+    .status-passive {
+        background-color: #ffebee;
+        color: #c62828;
+        border: 1px solid #ffcdd2;
     }
 
     .btn-action {
         border-radius: 8px;
-        padding: 6px 16px;
+        padding: 6px 14px;
         font-weight: 500;
         transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
+        font-size: 13px;
     }
 
         .btn-action:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12);
         }
 
     .btn-create {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        padding: 10px 25px;
+        padding: 10px 22px;
         border-radius: 30px;
+        font-weight: 600;
     }
 
         .btn-create:hover {
             color: white;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
     .badge-id {
-        background-color: #e9ecef;
+        background-color: #f1f3f5;
         color: #495057;
-        padding: 5px 10px;
+        padding: 4px 10px;
         border-radius: 6px;
-        font-family: 'Courier New', Courier, monospace;
+        font-weight: 600;
     }
 </style>
 
@@ -71,8 +109,8 @@
             <div class="category-card">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h3 class="mb-1">Kategori Yönetimi</h3>
-                        <p class="text-muted small">Katalog sistemindeki tüm kategorileri buradan yönetebilirsiniz.</p>
+                        <h3 class="mb-1" style="font-weight: 700; color: #2d3436;">Kategori Yönetimi</h3>
+                        <p class="text-muted small">Katalog yapısını, görselleri ve aktiflik durumlarını buradan güncelleyebilirsiniz.</p>
                     </div>
                     <a href="/Admin/Category/CreateCategory/" class="btn btn-create btn-action">
                         <i class="fa-solid fa-plus"></i> Yeni Kategori Ekle
@@ -83,8 +121,10 @@
                     <table class="table table-hover align-middle">
                         <thead>
                             <tr>
-                                <th style="width: 80px;">#</th>
+                                <th style="width: 60px;">#</th>
+                                <th style="width: 100px;">Görsel</th>
                                 <th>Kategori Adı</th>
+                                <th style="width: 150px;">Durum</th>
                                 <th class="text-center" style="width: 250px;">İşlemler</th>
                             </tr>
                         </thead>
@@ -96,7 +136,33 @@
                                     count++;
                                     <tr>
                                         <td><span class="badge-id">@count</span></td>
-                                        <td class="fw-bold text-dark">@item.CategoryName</td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                            {
+                                                <img src="@item.ImageUrl" class="category-img" alt="@item.CategoryName" />
+                                            }
+                                            else
+                                            {
+                                                <img src="/Category/no-image.png" class="category-img" alt="Görsel Yok" />
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-dark" style="font-size: 15px;">@item.CategoryName</span>
+                                        </td>
+                                        <td>
+                                            @if (item.IsActive)
+                                            {
+                                                <span class="status-badge status-active">
+                                                    <i class="fa-solid fa-circle-check"></i> Aktif
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-badge status-passive">
+                                                    <i class="fa-solid fa-circle-xmark"></i> Pasif
+                                                </span>
+                                            }
+                                        </td>
                                         <td class="text-center">
                                             <a href="/Admin/Category/UpdateCategory/@item.CategoryId" class="btn btn-action btn-outline-primary btn-sm me-2">
                                                 <i class="fa-solid fa-pen-to-square"></i> Düzenle
@@ -111,9 +177,12 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="3" class="text-center py-5">
-                                        <i class="fa-solid fa-folder-open fa-3x text-muted mb-3"></i>
-                                        <p class="text-muted">Henüz hiç kategori eklenmemiş.</p>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="mb-3">
+                                            <i class="fa-solid fa-folder-open fa-3x text-muted" style="opacity: 0.5;"></i>
+                                        </div>
+                                        <p class="text-muted fw-bold">Henüz hiç kategori eklenmemiş.</p>
+                                        <a href="/Admin/Category/CreateCategory/" class="btn btn-sm btn-primary">İlk Kategoriyi Ekle</a>
                                     </td>
                                 </tr>
                             }
@@ -125,42 +194,22 @@
     </div>
 </section>
 
-@* JavaScript İşlemleri *@
 <script>
     function deleteCategory(id, name) {
         Swal.fire({
             title: 'Emin misiniz?',
-            text: `"${name}" kategorisi silinecektir. Bu işlem geri alınamaz!`,
+            text: `"${name}" kategorisi sistemden tamamen silinecektir.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
+            cancelButtonColor: '#adb5bd',
             confirmButtonText: 'Evet, Sil!',
-            cancelButtonText: 'İptal',
+            cancelButtonText: 'Vazgeç',
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                // Controller'daki DeleteAction'a yönlendiriyoruz
                 window.location.href = "/Admin/Category/DeleteCategory/" + id;
             }
         });
-    }
-
-    // Eğer Controller'dan silme başarılı mesajı gelirse (TempData ile)
-    @if (TempData["DeleteSuccess"] != null)
-    {
-            <text>
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            });
-            Toast.fire({
-                icon: 'success',
-                title: '@TempData["DeleteSuccess"]'
-            });
-            </text>
     }
 </script>

@@ -59,5 +59,11 @@ namespace MultiShop.Catalog.Controllers
             await _productService.UpdateProductAsync(updateProductDTO);
             return Ok("Ürün başarıyla güncellendi");
         }
+        [HttpGet("IsFeatureList")]
+        public async Task<IActionResult> IsFeatureList()
+        {
+            var ısFeaturelist = await _productService.IsFeatureList();
+            return Ok(ısFeaturelist);
+        }
     }
 }

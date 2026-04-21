@@ -23,11 +23,11 @@
     .table thead th {
         background-color: #f8f9fa;
         color: #333;
-        font-weight: 600;
+        font-weight: 700;
         text-transform: uppercase;
         font-size: 11px;
-        border-bottom: 2px solid #dee2e6;
         letter-spacing: 0.5px;
+        border-bottom: 2px solid #dee2e6;
     }
 
     .btn-create {
@@ -37,7 +37,7 @@
         border-radius: 30px;
         padding: 10px 25px;
         transition: all 0.3s;
-        font-weight: 500;
+        font-weight: 600;
     }
 
         .btn-create:hover {
@@ -51,18 +51,46 @@
         width: 50px;
         height: 50px;
         object-fit: cover;
-        border-radius: 8px;
-        border: 1px solid #eee;
+        border-radius: 10px;
+        border: 2px solid #f0f0f0;
+        transition: transform 0.2s;
     }
+
+        .product-img:hover {
+            transform: scale(1.1);
+        }
 
     .category-badge {
         background-color: #f0f2f5;
         color: #667eea;
-        font-weight: 600;
+        font-weight: 700;
         padding: 6px 14px;
         border-radius: 20px;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         border: 1px solid #e0e0e0;
+    }
+
+    .feature-badge {
+        padding: 6px 12px;
+        border-radius: 30px;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-transform: uppercase;
+    }
+
+    .feature-active {
+        background-color: #fff9db;
+        color: #f08c00;
+        border: 1px solid #ffe066;
+    }
+
+    .feature-passive {
+        background-color: #f8f9fa;
+        color: #adb5bd;
+        border: 1px solid #e9ecef;
     }
 
     .pagination-container {
@@ -71,59 +99,26 @@
         justify-content: center;
     }
 
-    .pagination {
-        display: flex;
-        padding-left: 0;
-        list-style: none;
-        border-radius: 0.25rem;
-    }
-
     .page-item .page-link {
         border: 1px solid #dee2e6;
         padding: 8px 16px;
         margin: 0 3px;
         color: #764ba2;
-        background-color: #fff;
         border-radius: 6px;
-        transition: all 0.2s ease-in-out;
-        text-decoration: none;
     }
 
     .page-item.active .page-link {
         background-color: #764ba2;
         border-color: #764ba2;
         color: white;
-        box-shadow: 0 3px 6px rgba(118, 75, 162, 0.2);
     }
-
-    .page-item .page-link:hover:not(.active) {
-        background-color: #f1edff;
-        border-color: #764ba2;
-    }
-
-    .category-badge {
-        background-color: #f0f2f5;
-        color: #667eea;
-        font-weight: 700; 
-        padding: 8px 16px; 
-        border-radius: 20px;
-        font-size: 0.95rem; 
-        border: 1px solid #e0e0e0;
-        display: inline-block;
-        white-space: nowrap;
-    }
-
-        .category-badge i {
-            font-size: 0.9rem;
-            margin-right: 5px;
-        }
 </style>
 
 <div class="product-card">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h3 class="mb-1" style="color: #4a4a4a;">Ürün Yönetimi</h3>
-            <p class="text-muted small mb-0">Katalogdaki tüm ürünleri kategori bazlı görebilir ve yönetebilirsiniz.</p>
+            <h3 class="mb-1" style="font-weight: 700; color: #2d3436;">Ürün Yönetimi</h3>
+            <p class="text-muted small mb-0">Katalogdaki ürünlerin listesini, öne çıkan durumlarını ve fiyatlarını yönetin.</p>
         </div>
         <a href="/Admin/Product/CreateProduct/" class="btn btn-create">
             <i class="fa-solid fa-plus me-2"></i> Yeni Ürün Ekle
@@ -138,6 +133,7 @@
                     <th style="width: 80px;">Görsel</th>
                     <th>Ürün Adı</th>
                     <th>Kategori</th>
+                    <th class="text-center">Öne Çıkan</th>
                     <th>Fiyat</th>
                     <th class="text-center" style="width: 250px;">İşlemler</th>
                 </tr>
@@ -149,7 +145,7 @@
                     {
                         count++;
                         <tr>
-                            <td><span class="badge bg-light text-dark shadow-sm">@count</span></td>
+                            <td><span class="badge bg-light text-dark border">@count</span></td>
                             <td>
                                 <img src="@item.ProductImageUrl" class="product-img" onerror="this.src='/images/no-image.png'" alt="@item.ProductName" />
                             </td>
@@ -160,15 +156,29 @@
                                     @(string.IsNullOrEmpty(item.CategoryName) ? "Kategorisiz" : item.CategoryName)
                                 </span>
                             </td>
+                            <td class="text-center">
+                                @if (item.IsFeature)
+                                {
+                                    <span class="feature-badge feature-active">
+                                        <i class="fa-solid fa-star"></i> Öne Çıkan
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="feature-badge feature-passive">
+                                        <i class="fa-regular fa-star"></i> Standart
+                                    </span>
+                                }
+                            </td>
                             <td>
-                                <span class="text-success fw-bold">@item.ProductPrice.ToString("C2")</span>
+                                <span class="text-success fw-bold" style="font-size: 1.1rem;">@item.ProductPrice.ToString("C2")</span>
                             </td>
                             <td class="text-center">
                                 <a href="/Admin/Product/UpdateProduct/@item.ProductId" class="btn btn-outline-primary btn-sm rounded-pill px-3 me-1">
-                                    <i class="fa-solid fa-pen-to-square me-1"></i> Düzenle
+                                    <i class="fa-solid fa-pen-nib me-1"></i> Düzenle
                                 </a>
                                 <button onclick="deleteProduct('@item.ProductId', '@item.ProductName')" class="btn btn-outline-danger btn-sm rounded-pill px-3">
-                                    <i class="fa-solid fa-trash me-1"></i> Sil
+                                    <i class="fa-solid fa-trash-can me-1"></i> Sil
                                 </button>
                             </td>
                         </tr>
@@ -177,11 +187,10 @@
                 else
                 {
                     <tr>
-                        <td colspan="6" class="text-center py-5">
+                        <td colspan="7" class="text-center py-5">
                             <div class="text-muted">
                                 <i class="fa-solid fa-box-open fa-4x mb-3 d-block opacity-50"></i>
                                 <h5 class="fw-normal">Henüz kayıtlı bir ürün bulunamadı.</h5>
-                                <p class="small">Yeni bir ürün ekleyerek başlayabilirsiniz.</p>
                             </div>
                         </td>
                     </tr>
@@ -197,11 +206,6 @@
             {
                 LiElementClasses = new string[] { "page-item" },
                 PageClasses = new string[] { "page-link" },
-                DisplayLinkToFirstPage = PagedListDisplayMode.Always,
-                DisplayLinkToLastPage = PagedListDisplayMode.Always,
-                DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
-                DisplayLinkToNextPage = PagedListDisplayMode.Always,
-                MaximumPageNumbersToDisplay = 5,
                 UlElementClasses = new string[] { "pagination" }
                 })
     </div>
@@ -218,7 +222,8 @@
             confirmButtonColor: '#764ba2',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Evet, Sil!',
-            cancelButtonText: 'Vazgeç'
+            cancelButtonText: 'Vazgeç',
+            reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = "/Admin/Product/DeleteProduct/" + id;
@@ -228,14 +233,14 @@
 
     @if (TempData["DeleteSuccess"] != null)
     {
-                <text>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Başarılı!',
-                    text: '@TempData["DeleteSuccess"]',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-                </text>
+            <text>
+            Swal.fire({
+                icon: 'success',
+                title: 'Başarılı!',
+                text: '@TempData["DeleteSuccess"]',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            </text>
     }
 </script>

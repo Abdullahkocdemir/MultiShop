@@ -5,7 +5,6 @@
     Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
 }
 
-@* FontAwesome İkonları *@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
 <style>
@@ -35,6 +34,24 @@
             border-color: #667eea;
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
+
+    #imagePreview {
+        width: 150px;
+        height: 150px;
+        border-radius: 12px;
+        border: 2px dashed #dee2e6;
+        display: none;
+        object-fit: cover;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+        cursor: pointer;
+    }
 
     .btn-save {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -70,22 +87,48 @@
     <div class="col-md-8">
         <div class="form-card">
             <div class="mb-4">
-                <h3 class="mb-1">Yeni Kategori Oluştur</h3>
-                <p class="text-muted small">Sisteme yeni bir ürün kategorisi tanımlamak için aşağıdaki alanı doldurun.</p>
+                <h3 class="mb-1" style="font-weight: 700;">Yeni Kategori Oluştur</h3>
+                <p class="text-muted small">Sisteme yeni bir ürün kategorisi, görseli ve durum bilgisi tanımlayın.</p>
             </div>
 
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
+
                 <div class="mb-4">
                     <label asp-for="CategoryName" class="form-label">Kategori Adı</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="fa-solid fa-tag text-muted"></i>
                         </span>
-                        <input type="text" asp-for="CategoryName" class="form-control border-start-0" placeholder="Örn: Elektronik, Moda, Ev & Yaşam" required>
+                        <input type="text" asp-for="CategoryName" class="form-control border-start-0" placeholder="Örn: Elektronik, Moda" required>
                     </div>
                     <span asp-validation-for="CategoryName" class="text-danger small"></span>
                 </div>
-                <br />
+
+                <div class="mb-4">
+                    <label class="form-label">Kategori Görseli</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fa-solid fa-image text-muted"></i>
+                        </span>
+                        <input type="file" name="ImageFile" id="imageInput" class="form-control border-start-0" accept="image/*" required>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <img id="imagePreview" src="#" alt="Görsel Önizleme" />
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label d-block">Kategori Durumu</label>
+                    <div class="form-check form-switch d-flex align-items-center gap-3" style="padding-left: 3.5em;">
+                        <input class="form-check-input" type="checkbox" asp-for="IsActive" id="statusSwitch" checked>
+                        <label class="form-check-label fw-bold text-primary" for="statusSwitch" id="statusLabel">Aktif</label>
+                    </div>
+                    <p class="text-muted small mt-1">Kategorinin katalogda görünüp görünmeyeceğini belirler.</p>
+                </div>
+
+                <hr class="my-4" style="opacity: 0.1;">
+
                 <div class="d-flex gap-2 pt-2">
                     <button type="submit" class="btn btn-save">
                         <i class="fa-solid fa-floppy-disk"></i> Kategoriyi Kaydet
@@ -98,3 +141,29 @@
         </div>
     </div>
 </div>
+
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+
+    imageInput.onchange = evt => {
+        const [file] = imageInput.files;
+        if (file) {
+            imagePreview.src = URL.createObjectURL(file);
+            imagePreview.style.display = 'inline-block';
+        }
+    }
+
+    const statusSwitch = document.getElementById('statusSwitch');
+    const statusLabel = document.getElementById('statusLabel');
+
+    statusSwitch.addEventListener('change', function() {
+        if (this.checked) {
+            statusLabel.innerText = "Aktif";
+            statusLabel.className = "form-check-label fw-bold text-primary";
+        } else {
+            statusLabel.innerText = "Pasif";
+            statusLabel.className = "form-check-label fw-bold text-danger";
+        }
+    });
+</script>

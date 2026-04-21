@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MultiShop.DTOLayer.CatalogDTOs.FeatureDTO;
 using Newtonsoft.Json;
 using System.Text;
+using MultiShop.DTOLayer.CatalogDTOs.FeatureSliderDTO;
 
 namespace MultiShop.WebUI.Areas.Admin.Controllers
 {
@@ -24,7 +24,7 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
             if (responseMessage.IsSuccessStatusCode)
             {
                 var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<List<ResultFeatureDTO>>(jsonData);
+                var values = JsonConvert.DeserializeObject<List<ResultFeatureSliderDTO>>(jsonData);
                 return View(values);
             }
             return View();
@@ -34,7 +34,7 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
         public IActionResult CreateFeature() => View();
 
         [HttpPost]
-        public async Task<IActionResult> CreateFeature(CreateFeatureDTO createFeatureDTO, IFormFile ImageFile)
+        public async Task<IActionResult> CreateFeature(CreateFeatureSliderDTO createFeatureDTO, IFormFile ImageFile)
         {
             if (ImageFile != null)
             {

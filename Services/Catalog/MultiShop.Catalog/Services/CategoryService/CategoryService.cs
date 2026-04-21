@@ -47,5 +47,19 @@ namespace MultiShop.Catalog.Services.CategoryService
             var value = await _categoryCollection.Find(x => x.CategoryId == id).FirstOrDefaultAsync();
             return _mapper.Map<GetByIdCategoryDTO>(value);
         }
+
+        public async Task StatusChangeCategoryTrueAsync(string id)
+        {
+            var filter = Builders<Category>.Filter.Eq(x => x.CategoryId, id);
+            var update = Builders<Category>.Update.Set(x => x.IsActive, true);
+            await _categoryCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task StatusChangeCategoryFalseAsync(string id)
+        {
+            var filter = Builders<Category>.Filter.Eq(x => x.CategoryId, id);
+            var update = Builders<Category>.Update.Set(x => x.IsActive, false);
+            await _categoryCollection.UpdateOneAsync(filter, update);
+        }
     }
 }

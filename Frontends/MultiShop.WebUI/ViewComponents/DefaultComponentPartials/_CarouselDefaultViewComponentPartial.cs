@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MultiShop.DTOLayer.CatalogDTOs.FeatureDTO;
+using MultiShop.DTOLayer.CatalogDTOs.FeatureSliderDTO;
 using Newtonsoft.Json;
-using System.Net.Http;
 
 namespace MultiShop.WebUI.ViewComponents.DefaultComponentPartials
 {
@@ -21,7 +20,7 @@ namespace MultiShop.WebUI.ViewComponents.DefaultComponentPartials
             if (responseMessage.IsSuccessStatusCode)
             {
                 var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<List<ResultFeatureDTO>>(jsonData);
+                var values = JsonConvert.DeserializeObject<List<ResultFeatureSliderDTO>>(jsonData);
                 return View(values);
             }
             return View();

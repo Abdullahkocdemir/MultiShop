@@ -1,0 +1,71 @@
+﻿@model UpdateFeatureDTO
+@{
+    ViewData["Title"] = "Öne Çıkan Güncelle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<style>
+    .form-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 30px;
+        margin-top: 20px;
+        max-width: 600px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #dee2e6;
+    }
+</style>
+
+<div class="row justify-content-start px-3">
+    <div class="col-md-8">
+        <div class="form-card">
+            <div class="mb-4">
+                <h3 class="mb-1">Öne Çıkan Güncelle</h3>
+                <p class="text-muted small">Mevcut kaydı düzenleyin.</p>
+            </div>
+
+            <form method="post">
+                <input type="hidden" asp-for="FeatureId" />
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label">Başlık</label>
+                    <input type="text" asp-for="Title" class="form-control" required>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Icon" class="form-label">İkon Kodu</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i id="icon-preview" class="@Model.Icon text-primary"></i>
+                        </span>
+                        <input type="text" asp-for="Icon" id="icon-input" class="form-control border-start-0" required>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 30px; padding: 12px 30px;">
+                        <i class="fa-solid fa-arrows-rotate"></i> Güncellemeleri Kaydet
+                    </button>
+                    <a href="/Admin/Feature/Index" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 12px 25px;">Vazgeç</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('icon-input').addEventListener('input', function (e) {
+        document.getElementById('icon-preview').className = e.target.value;
+    });
+</script>

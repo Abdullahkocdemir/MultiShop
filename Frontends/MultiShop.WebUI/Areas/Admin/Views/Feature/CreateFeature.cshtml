@@ -1,0 +1,82 @@
+﻿@model CreateFeatureDTO
+@{
+    ViewData["Title"] = "Yeni Öne Çıkan Ekle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<style>
+    .form-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 30px;
+        margin-top: 20px;
+        max-width: 600px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #dee2e6;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>
+
+<div class="row justify-content-start px-3">
+    <div class="col-md-8">
+        <div class="form-card">
+            <div class="mb-4">
+                <h3 class="mb-1">Yeni Öne Çıkan Ekle</h3>
+                <p class="text-muted small">İkon ismini (FontAwesome) ve başlığı giriniz.</p>
+            </div>
+
+            <form method="post">
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label">Başlık</label>
+                    <input type="text" asp-for="Title" class="form-control" placeholder="Örn: Ücretsiz Kargo" required>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Icon" class="form-label">İkon Kodu</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i id="icon-preview" class="fa-solid fa-icons text-muted"></i>
+                        </span>
+                        <input type="text" asp-for="Icon" id="icon-input" class="form-control border-start-0" placeholder="Örn: fa-solid fa-truck" required>
+                    </div>
+                    <small class="text-muted">Örn: fa-solid fa-truck, fa-solid fa-headset, fa-solid fa-rotate</small>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-save">
+                        <i class="fa-solid fa-floppy-disk"></i> Öne Çıkanı Kaydet
+                    </button>
+                    <a href="/Admin/Feature/Index" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 12px 25px;">Vazgeç</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('icon-input').addEventListener('input', function (e) {
+        document.getElementById('icon-preview').className = e.target.value || 'fa-solid fa-icons';
+    });
+</script>

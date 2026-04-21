@@ -1,0 +1,121 @@
+﻿@model List<MultiShop.DTOLayer.CatalogDTOs.FeatureDTO.ResultFeatureDTO>
+
+@{
+    ViewData["Title"] = "Öne Çıkan Listesi";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .category-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 25px;
+        margin-top: 20px;
+    }
+
+    .badge-id {
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .icon-preview {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 8px;
+        color: #667eea;
+        font-size: 1.2rem;
+    }
+</style>
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="category-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="mb-1">Öne Çıkanlar Yönetimi</h3>
+                        <p class="text-muted small">Ana sayfadaki ikonlu özellik alanlarını buradan yönetebilirsiniz.</p>
+                    </div>
+                    <a href="/Admin/Feature/CreateFeature/" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 30px; padding: 10px 25px;">
+                        <i class="fa-solid fa-plus"></i> Yeni Öne Çıkan Ekle
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">#</th>
+                                <th style="width: 100px;">İkon</th>
+                                <th>Başlık</th>
+                                <th class="text-center" style="width: 250px;">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Count > 0)
+                            {
+                                @foreach (var item in Model)
+                                {
+                                    count++;
+                                    <tr>
+                                        <td><span class="badge-id">@count</span></td>
+                                        <td>
+                                            <div class="icon-preview">
+                                                <i class="@item.Icon"></i>
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold text-dark">@item.Title</td>
+                                        <td class="text-center">
+                                            <a href="/Admin/Feature/UpdateFeature/@item.FeatureId" class="btn btn-sm btn-outline-primary" style="border-radius: 8px; padding: 6px 16px;">
+                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                            </a>
+                                            <button onclick="deleteFeature('@item.FeatureId', '@item.Title')" class="btn btn-sm btn-outline-danger ms-2" style="border-radius: 8px; padding: 6px 16px;">
+                                                <i class="fa-solid fa-trash-can"></i> Sil
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-5 text-muted">Henüz kayıt bulunamadı.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function deleteFeature(id, name) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: `"${name}" öğesi silinecektir.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'İptal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/Admin/Feature/DeleteFeature/" + id;
+            }
+        });
+    }
+</script>

@@ -34,6 +34,12 @@
         align-items: center;
         justify-content: center;
     }
+
+    .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+        cursor: pointer;
+    }
 </style>
 
 <div class="container py-4">
@@ -80,6 +86,15 @@
             </div>
 
             <div class="mb-4">
+                <label class="form-label fw-bold d-block">Öne Çıkarma Durumu</label>
+                <div class="form-check form-switch d-flex align-items-center gap-3" style="padding-left: 3.5em;">
+                    <input class="form-check-input" type="checkbox" asp-for="IsFeature" id="featureSwitch">
+                    <label class="form-check-label fw-bold text-muted" for="featureSwitch" id="featureLabel">Ana Sayfada Öne Çıkar</label>
+                </div>
+                <small class="text-muted">Bu seçenek işaretlenirse ürün ana sayfadaki "Öne Çıkanlar" bölümünde listelenir.</small>
+            </div>
+
+            <div class="mb-4">
                 <label class="form-label fw-bold">Ürün Açıklaması</label>
                 <textarea asp-for="ProductDescription" class="form-control" rows="4" placeholder="Ürün özelliklerini detaylıca girin..." style="border-radius: 8px;"></textarea>
             </div>
@@ -114,6 +129,14 @@
                     $('#imgIcon').addClass('d-none');
                 }
                 reader.readAsDataURL(file);
+            }
+        });
+
+        $('#featureSwitch').change(function() {
+            if(this.checked) {
+                $('#featureLabel').removeClass('text-muted').addClass('text-primary');
+            } else {
+                $('#featureLabel').removeClass('text-primary').addClass('text-muted');
             }
         });
     });
