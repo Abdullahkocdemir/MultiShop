@@ -1,0 +1,112 @@
+﻿@model UpdateBrandDTO
+
+@{
+    ViewData["Title"] = "Marka Güncelle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+<style>
+    .form-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 30px;
+        margin-top: 20px;
+        max-width: 600px;
+    }
+
+    .preview-container {
+        text-align: center;
+        margin-top: 15px;
+        padding: 10px;
+        border: 2px dashed #eee;
+        border-radius: 12px;
+        background-color: #fafafa;
+    }
+
+    #logoPreview {
+        width: 150px;
+        height: 80px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    .btn-update {
+        background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>
+
+<div class="row justify-content-start">
+    <div class="col-md-8">
+        <div class="form-card">
+            <div class="mb-4">
+                <h3 class="mb-1" style="font-weight: 700;">Marka Düzenle</h3>
+                <p class="text-muted small">Marka ismini ve logosunu bu panelden güncelleyebilirsiniz.</p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="BrandId" />
+                <input type="hidden" asp-for="ImageUrl" />
+
+                <div class="mb-4">
+                    <label asp-for="BrandName" class="form-label fw-bold">Marka Adı</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fa-solid fa-copyright text-muted"></i>
+                        </span>
+                        <input type="text" asp-for="BrandName" class="form-control border-start-0" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-success">Marka Logosu</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fa-solid fa-image text-muted"></i>
+                        </span>
+                        <input type="file" name="ImageFile" id="imageInput" class="form-control border-start-0" accept="image/*">
+                    </div>
+
+                    <div class="preview-container">
+                        <p class="text-muted small mb-2">Mevcut Logo</p>
+                        <img id="logoPreview" src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/BrandImages/no-brand.png" : Model.ImageUrl)" alt="Marka Logosu" />
+                        <div class="mt-2 text-muted small">Logoyu değiştirmek için yeni dosya seçin.</div>
+                    </div>
+                </div>
+
+                <hr class="my-4" style="opacity: 0.1;">
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-update">
+                        <i class="fa-solid fa-arrows-rotate"></i> Güncellemeleri Kaydet
+                    </button>
+                    <a href="/Admin/Brand/Index" class="btn btn-outline-secondary rounded-pill px-4">
+                        Vazgeç
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const logoPreview = document.getElementById('logoPreview');
+
+    imageInput.onchange = evt => {
+        const [file] = imageInput.files;
+        if (file) {
+            logoPreview.src = URL.createObjectURL(file);
+        }
+    }
+</script>

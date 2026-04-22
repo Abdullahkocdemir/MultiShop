@@ -1,0 +1,46 @@
+﻿@model CreateOfferDiscountDTO
+@{
+    ViewData["Title"] = "Yeni Teklif Ekle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="card border-0 shadow-sm col-md-7">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-4">Yeni İndirim Teklifi Tanımla</h4>
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Kampanya Başlığı</label>
+                    <input type="text" asp-for="Title" class="form-control" placeholder="Örn: %50'ye Varan İndirimler" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Alt Başlık / Açıklama</label>
+                    <input type="text" asp-for="SubTitle" class="form-control" placeholder="Örn: Elektronik Ürünlerde Geçerli" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Kampanya Görseli</label>
+                    <input type="file" name="ImageFile" class="form-control" accept="image/*" onchange="previewImage(this)" required />
+                    <img id="prev" src="#" style="display:none; width: 200px; margin-top:15px; border-radius: 12px; border: 1px solid #ddd;" />
+                </div>
+                <div class="pt-3">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">Kaydet</button>
+                    <a href="/Admin/OfferDiscount/Index" class="btn btn-light rounded-pill px-4 ms-2">Vazgeç</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = e => {
+                const img = document.getElementById('prev');
+                img.src = e.target.result;
+                img.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

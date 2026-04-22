@@ -1,0 +1,47 @@
+﻿@model UpdateOfferDiscountDTO
+@{
+    ViewData["Title"] = "Teklifi Güncelle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="card border-0 shadow-sm col-md-7">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-4">Teklif Bilgilerini Düzenle</h4>
+            <form method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="OfferDiscountId" />
+                <input type="hidden" asp-for="ImageUrl" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Kampanya Başlığı</label>
+                    <input type="text" asp-for="Title" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Alt Başlık / Açıklama</label>
+                    <input type="text" asp-for="SubTitle" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-primary">Mevcut Görseli Değiştir</label>
+                    <input type="file" name="ImageFile" class="form-control" accept="image/*" onchange="previewImage(this)" />
+                    <div class="mt-3">
+                        <img id="prev" src="@Model.ImageUrl" style="width: 200px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
+                    </div>
+                </div>
+                <div class="pt-3">
+                    <button type="submit" class="btn btn-success rounded-pill px-4">Değişiklikleri Kaydet</button>
+                    <a href="/Admin/OfferDiscount/Index" class="btn btn-light rounded-pill px-4 ms-2">Geri Dön</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = e => { document.getElementById('prev').src = e.target.result; }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
