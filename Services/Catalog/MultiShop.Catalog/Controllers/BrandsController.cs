@@ -8,6 +8,7 @@ namespace MultiShop.Catalog.Controllers
     [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
+    //Test
     public class BrandsController : ControllerBase
     {
         private readonly IBrandService _brandService;
