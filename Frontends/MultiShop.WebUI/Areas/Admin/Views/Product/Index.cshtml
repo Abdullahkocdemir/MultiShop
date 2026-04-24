@@ -28,6 +28,7 @@
         font-size: 11px;
         letter-spacing: 0.5px;
         border-bottom: 2px solid #dee2e6;
+        white-space: nowrap;
     }
 
     .btn-create {
@@ -48,36 +49,32 @@
         }
 
     .product-img {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
         object-fit: cover;
-        border-radius: 10px;
-        border: 2px solid #f0f0f0;
+        border-radius: 8px;
+        border: 1px solid #eee;
         transition: transform 0.2s;
     }
 
         .product-img:hover {
-            transform: scale(1.1);
+            transform: scale(1.2);
         }
 
     .category-badge {
         background-color: #f0f2f5;
         color: #667eea;
-        font-weight: 700;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        border: 1px solid #e0e0e0;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
     }
 
     .feature-badge {
-        padding: 6px 12px;
-        border-radius: 30px;
-        font-size: 11px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 10px;
         font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
         text-transform: uppercase;
     }
 
@@ -93,24 +90,15 @@
         border: 1px solid #e9ecef;
     }
 
+    .action-buttons .btn {
+        margin: 2px;
+        font-weight: 500;
+    }
+
     .pagination-container {
         margin-top: 25px;
         display: flex;
         justify-content: center;
-    }
-
-    .page-item .page-link {
-        border: 1px solid #dee2e6;
-        padding: 8px 16px;
-        margin: 0 3px;
-        color: #764ba2;
-        border-radius: 6px;
-    }
-
-    .page-item.active .page-link {
-        background-color: #764ba2;
-        border-color: #764ba2;
-        color: white;
     }
 </style>
 
@@ -118,7 +106,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h3 class="mb-1" style="font-weight: 700; color: #2d3436;">Ürün Yönetimi</h3>
-            <p class="text-muted small mb-0">Katalogdaki ürünlerin listesini, öne çıkan durumlarını ve fiyatlarını yönetin.</p>
+            <p class="text-muted small mb-0">Ürün listesini yönetin, fiyatları güncelleyin ve görselleri düzenleyin.</p>
         </div>
         <a href="/Admin/Product/CreateProduct/" class="btn btn-create">
             <i class="fa-solid fa-plus me-2"></i> Yeni Ürün Ekle
@@ -129,13 +117,13 @@
         <table class="table table-hover align-middle">
             <thead>
                 <tr>
-                    <th style="width: 50px;">#</th>
-                    <th style="width: 80px;">Görsel</th>
+                    <th class="text-center">#</th>
+                    <th>Görsel</th>
                     <th>Ürün Adı</th>
                     <th>Kategori</th>
-                    <th class="text-center">Öne Çıkan</th>
+                    <th class="text-center">Durum</th>
                     <th>Fiyat</th>
-                    <th class="text-center" style="width: 250px;">İşlemler</th>
+                    <th class="text-center" style="min-width: 380px;">İşlemler</th>
                 </tr>
             </thead>
             <tbody>
@@ -145,40 +133,39 @@
                     {
                         count++;
                         <tr>
-                            <td><span class="badge bg-light text-dark border">@count</span></td>
+                            <td class="text-center"><span class="text-muted small">@count</span></td>
                             <td>
-                                <img src="@item.ProductImageUrl" class="product-img" onerror="this.src='/images/no-image.png'" alt="@item.ProductName" />
+                                <img src="@item.ProductImageUrl" class="product-img" onerror="this.src='/images/no-image.png'" />
                             </td>
                             <td class="fw-bold text-dark">@item.ProductName</td>
                             <td>
                                 <span class="category-badge">
-                                    <i class="fa-solid fa-layer-group me-1 small"></i>
+                                    <i class="fa-solid fa-tag me-1"></i>
                                     @(string.IsNullOrEmpty(item.CategoryName) ? "Kategorisiz" : item.CategoryName)
                                 </span>
                             </td>
                             <td class="text-center">
                                 @if (item.IsFeature)
                                 {
-                                    <span class="feature-badge feature-active">
-                                        <i class="fa-solid fa-star"></i> Öne Çıkan
-                                    </span>
+                                    <span class="feature-badge feature-active"><i class="fa-solid fa-star"></i> Öne Çıkan</span>
                                 }
                                 else
                                 {
-                                    <span class="feature-badge feature-passive">
-                                        <i class="fa-regular fa-star"></i> Standart
-                                    </span>
+                                    <span class="feature-badge feature-passive"><i class="fa-regular fa-star"></i> Standart</span>
                                 }
                             </td>
                             <td>
-                                <span class="text-success fw-bold" style="font-size: 1.1rem;">@item.ProductPrice.ToString("C2")</span>
+                                <span class="text-dark fw-bold">@item.ProductPrice.ToString("C2")</span>
                             </td>
-                            <td class="text-center">
-                                <a href="/Admin/Product/UpdateProduct/@item.ProductId" class="btn btn-outline-primary btn-sm rounded-pill px-3 me-1">
-                                    <i class="fa-solid fa-pen-nib me-1"></i> Düzenle
+                            <td class="text-center action-buttons">
+                                <a href="/Admin/ProductImage/ProductImageDetail/@item.ProductId" class="btn btn-outline-info btn-sm rounded-pill px-3">
+                                    <i class="fa-solid fa-images me-1"></i> Görseller
+                                </a>
+                                <a href="/Admin/Product/UpdateProduct/@item.ProductId" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                    <i class="fa-solid fa-pen-to-square me-1"></i> Düzenle
                                 </a>
                                 <button onclick="deleteProduct('@item.ProductId', '@item.ProductName')" class="btn btn-outline-danger btn-sm rounded-pill px-3">
-                                    <i class="fa-solid fa-trash-can me-1"></i> Sil
+                                    <i class="fa-solid fa-trash me-1"></i> Sil
                                 </button>
                             </td>
                         </tr>
@@ -188,10 +175,8 @@
                 {
                     <tr>
                         <td colspan="7" class="text-center py-5">
-                            <div class="text-muted">
-                                <i class="fa-solid fa-box-open fa-4x mb-3 d-block opacity-50"></i>
-                                <h5 class="fw-normal">Henüz kayıtlı bir ürün bulunamadı.</h5>
-                            </div>
+                            <i class="fa-solid fa-box-open fa-3x mb-3 text-muted opacity-50"></i>
+                            <p class="text-muted">Ürün bulunamadı.</p>
                         </td>
                     </tr>
                 }
@@ -206,7 +191,7 @@
             {
                 LiElementClasses = new string[] { "page-item" },
                 PageClasses = new string[] { "page-link" },
-                UlElementClasses = new string[] { "pagination" }
+                UlElementClasses = new string[] { "pagination pagination-sm" }
                 })
     </div>
         }
@@ -216,7 +201,7 @@
     function deleteProduct(id, name) {
         Swal.fire({
             title: 'Emin misiniz?',
-            text: `"${name}" isimli ürünü silmek istediğinize emin misiniz?`,
+            text: `"${name}" isimli ürün kalıcı olarak silinecektir!`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#764ba2',
@@ -233,14 +218,14 @@
 
     @if (TempData["DeleteSuccess"] != null)
     {
-            <text>
-            Swal.fire({
-                icon: 'success',
-                title: 'Başarılı!',
-                text: '@TempData["DeleteSuccess"]',
-                timer: 2000,
-                showConfirmButton: false
-            });
-            </text>
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Başarılı!',
+                    text: '@TempData["DeleteSuccess"]',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                </text>
     }
 </script>

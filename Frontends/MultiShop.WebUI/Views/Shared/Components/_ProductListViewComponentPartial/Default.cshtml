@@ -1,28 +1,55 @@
-﻿<div class="col-lg-4 col-md-6 col-sm-6 pb-1">
-    <div class="product-item bg-light mb-4">
-        <div class="product-img position-relative overflow-hidden">
-            <img class="img-fluid w-100" src="~/online-shop-website-template/img/product-1.jpg" alt="Ürün Görseli">
-            <div class="product-action">
-                <a class="btn btn-outline-dark btn-square" href="" title="Sepete Ekle"><i class="fa fa-shopping-cart"></i></a>
-                <a class="btn btn-outline-dark btn-square" href="" title="Favorilere Ekle"><i class="far fa-heart"></i></a>
-                <a class="btn btn-outline-dark btn-square" href="" title="Karşılaştır"><i class="fa fa-sync-alt"></i></a>
-                <a class="btn btn-outline-dark btn-square" href="" title="Ürünü İncele"><i class="fa fa-search"></i></a>
+﻿@model List<MultiShop.DTOLayer.CatalogDTOs.ProductDTO.ResultProductWithCategoryDTO>
+
+@foreach (var item in Model)
+{
+    <div class="col-lg-4 col-md-6 col-sm-6 pb-1 d-flex align-items-stretch">
+        <div class="product-item bg-light mb-4 w-100">
+            <div class="product-img position-relative overflow-hidden">
+                @* Inline stil yerine yukarıdaki CSS'i kullanman daha iyidir *@
+                <img class="img-fluid w-100" src="@item.ProductImageUrl" alt="Ürün Görseli" style="height:200px; object-fit:cover;">
+                <div class="product-action">
+                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                    <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                </div>
             </div>
-        </div>
-        <div class="text-center py-4">
-            <a class="h6 text-decoration-none text-truncate" href="">Ürün Adı Buraya Gelecek</a>
-            <div class="d-flex align-items-center justify-content-center mt-2">
-                <h5>123.00 TL</h5>
-                <h6 class="text-muted ml-2"><del>123.00 TL</del></h6>
-            </div>
-            <div class="d-flex align-items-center justify-content-center mb-1">
-                <small class="fa fa-star text-primary mr-1"></small>
-                <small class="fa fa-star text-primary mr-1"></small>
-                <small class="fa fa-star text-primary mr-1"></small>
-                <small class="fa fa-star text-primary mr-1"></small>
-                <small class="fa fa-star text-primary mr-1"></small>
-                <small>(99 Değerlendirme)</small>
+            <div class="text-center py-4 px-2">
+                <a class="h6 text-decoration-none text-truncate d-block" href="">@item.ProductName</a>
+                <div class="d-flex align-items-center justify-content-center mt-2">
+                    <h5>@item.ProductPrice.ToString("C")</h5>
+                </div>
+                <div class="d-flex align-items-center justify-content-center mb-1">
+                    <small class="fa fa-star text-primary mr-1"></small>
+                    <small class="fa fa-star text-primary mr-1"></small>
+                    <small class="fa fa-star text-primary mr-1"></small>
+                    <small class="fa fa-star text-primary mr-1"></small>
+                    <small class="fa fa-star text-primary mr-1"></small>
+                    <small>(99)</small>
+                </div>
             </div>
         </div>
     </div>
-</div>
+}
+
+
+<style>
+    .product-img img {
+        height: 250px; /* Tüm resimler için sabit bir yükseklik */
+        object-fit: cover; /* Resmi bozmadan alanı kaplamasını sağlar */
+        width: 100%;
+    }
+
+    .product-item {
+        display: flex;
+        flex-direction: column;
+        height: 100%; /* Kartların içindeki yazı alanlarını da eşitlemek için */
+    }
+
+        .product-item .text-center {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+</style>

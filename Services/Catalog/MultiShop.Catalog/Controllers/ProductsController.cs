@@ -65,5 +65,11 @@ namespace MultiShop.Catalog.Controllers
             var ısFeaturelist = await _productService.IsFeatureList();
             return Ok(ısFeaturelist);
         }
+        [HttpGet("GetListCategoryOrProduct/{id}")]
+        public async Task<IActionResult> GetListCategoryOrProduct(string id)
+        {
+            var values = await _productService.GetListCategoryOrProduct(id);
+            return Ok(values);
+        }
     }
 }

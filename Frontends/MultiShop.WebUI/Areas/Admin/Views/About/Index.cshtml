@@ -1,0 +1,90 @@
+﻿@model List<MultiShop.DTOLayer.CatalogDTOs.AboutDTO.ResultAboutDTO>
+
+@{
+    ViewData["Title"] = "Kurumsal Bilgiler";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .about-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 25px;
+        margin-top: 20px;
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 30px;
+        font-weight: 600;
+    }
+
+    .info-text {
+        font-size: 13px;
+        color: #6c757d;
+    }
+</style>
+
+<section class="content container-fluid">
+    <div class="about-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1">Kurumsal & İletişim Yönetimi</h3>
+                <p class="text-muted small">Hakkımızda metnini ve iletişim (adres, telefon, e-posta) bilgilerini buradan yönetin.</p>
+            </div>
+            <a href="/Admin/About/CreateAbout/" class="btn btn-create">
+                <i class="fa-solid fa-plus me-2"></i> Yeni Kayıt Ekle
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Açıklama Özeti</th>
+                        <th>İletişim Bilgileri</th>
+                        <th class="text-center">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            count++;
+                            <tr>
+                                <td><span class="badge bg-light text-dark">@count</span></td>
+                                <td style="max-width: 300px;"><small class="text-muted">@(item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description)</small></td>
+                                <td>
+                                    <div class="info-text"><i class="fa-solid fa-envelope me-1 text-primary"></i> @item.Email</div>
+                                    <div class="info-text"><i class="fa-solid fa-phone me-1 text-success"></i> @item.Phone</div>
+                                    <div class="info-text"><i class="fa-solid fa-location-dot me-1 text-danger"></i> @item.Address</div>
+                                </td>
+                                <td class="text-center">
+                                    <a href="/Admin/About/UpdateAbout/@item.AboutId" class="btn btn-sm btn-outline-primary rounded-pill px-3 me-2">Düzenle</a>
+                                    <button onclick="deleteAbout('@item.AboutId')" class="btn btn-sm btn-outline-danger rounded-pill px-3">Sil</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script>
+    function deleteAbout(id) {
+        Swal.fire({ title: 'Emin misiniz?', text: "Bu kurumsal bilgi kaydı silinecek!", icon: 'warning', showCancelButton: true, confirmButtonText: 'Evet, Sil' })
+        .then((result) => { if (result.isConfirmed) window.location.href = "/Admin/About/DeleteAbout/" + id; });
+    }
+</script>
