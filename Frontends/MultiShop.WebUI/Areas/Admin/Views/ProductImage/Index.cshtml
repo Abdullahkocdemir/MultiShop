@@ -1,0 +1,283 @@
+﻿@model MultiShop.DTOLayer.CatalogDTOs.ProductImageDTO.ResultProductImageDTO
+@{
+    ViewData["Title"] = "Görsel Merkezi";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .master-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        padding: 40px;
+        border: none;
+    }
+
+    .img-slot {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        aspect-ratio: 1/1;
+        border: 2px dashed #dee2e6;
+        transition: 0.3s;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .img-slot.drag-over {
+            border-color: #764ba2;
+            background: #f8f7ff;
+            transform: scale(1.02);
+        }
+
+    .img-fill {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .slot-label {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #764ba2;
+        color: white;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        z-index: 5;
+    }
+
+    .remove-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        transition: 0.2s;
+        visibility: hidden;
+    }
+
+    .img-slot:hover .remove-btn {
+        visibility: visible;
+    }
+
+    .drop-zone {
+        border: 2px dashed #ced4da;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        background: #f8f9fa;
+    }
+
+    .draggable-img {
+        width: 100%;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: grab;
+        transition: 0.2s;
+        border: 2px solid transparent;
+    }
+
+        .draggable-img:hover {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+    .gradient-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .gradient-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .pool-container {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 10px;
+        background: #fff;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="master-card">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Görsel Yönetim Paneli</h2>
+                <p class="text-muted small">Dosyaları yükleyin ve slotlara sürükleyin. <b>ID varsa sistem otomatik günceller.</b></p>
+            </div>
+            <a href="/Admin/Product/Index" class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
+                <i class="fa-solid fa-arrow-left me-2"></i>Ürün Listesine Dön
+            </a>
+        </div>
+
+        <form asp-action="CreateProductDetail" method="post" id="imageForm">
+            <input type="hidden" asp-for="ProductId" />
+            <input type="hidden" asp-for="ProductImageId" />
+
+            <input type="hidden" asp-for="Image1" id="hidden_Image1" />
+            <input type="hidden" asp-for="Image2" id="hidden_Image2" />
+            <input type="hidden" asp-for="Image3" id="hidden_Image3" />
+            <input type="hidden" asp-for="Image4" id="hidden_Image4" />
+
+            <div class="row g-4 mb-5">
+                @for (int i = 1; i <= 4; i++)
+                {
+                    var propName = "Image" + i;
+                    var url = Model.GetType().GetProperty(propName)?.GetValue(Model, null)?.ToString();
+                    <div class="col-md-3">
+                        <div class="img-slot shadow-sm" data-slot="@i" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                            <span class="slot-label">SLOT @i</span>
+                            <button type="button" class="remove-btn" onclick="clearSlot(@i)"><i class="fa-solid fa-xmark"></i></button>
+                            <div class="slot-content w-100 h-100 d-flex align-items-center justify-content-center">
+                                @if (!string.IsNullOrEmpty(url))
+                                {
+                                    <img src="@url" class="img-fill">
+                                }
+                                else
+                                {
+                                    <div class="text-muted opacity-50 text-center"><i class="fa-solid fa-plus fa-2x"></i><br><small>Bırak</small></div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="bg-light p-4 rounded-4 border">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <div class="drop-zone d-flex flex-column align-items-center justify-content-center">
+                            <i class="fa-solid fa-images fa-3x text-muted mb-3"></i>
+                            <h6 class="fw-bold">Yeni Görsel Yükle</h6>
+                            <input type="file" id="fileUploader" class="form-control mb-2" multiple accept="image/*">
+                            <button type="button" class="btn btn-primary w-100 shadow-sm fw-bold" id="btnUpload">
+                                <i class="fa-solid fa-cloud-arrow-up me-2"></i>Sunucuya Gönder
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="px-2 mb-2 d-flex justify-content-between">
+                            <span class="fw-bold small text-muted">GÖRSEL HAVUZU</span>
+                            <span id="poolCounter" class="badge bg-primary">0 Görsel</span>
+                        </div>
+                        <div id="imagePool" class="row g-2 pool-container mx-0">
+                            <div class="col-12 text-center py-4 text-muted" id="poolPlaceholder">
+                                <small>Henüz yüklenen görsel yok.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex gap-3">
+                    <button type="submit" class="btn gradient-btn px-5 py-3 rounded-pill shadow-sm">
+                        <i class="fa-solid fa-save me-2"></i>@(string.IsNullOrEmpty(Model.ProductImageId) ? "Kaydet" : "Değişiklikleri Güncelle")
+                    </button>
+                    <button type="button" onclick="location.reload()" class="btn btn-light px-5 py-3 rounded-pill border fw-bold">Vazgeç</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let photoCount = 0;
+
+    $(document).ready(function () {
+        $('#btnUpload').on('click', async function () {
+            const fileInput = document.getElementById('fileUploader');
+            const files = fileInput.files;
+
+            if (files.length === 0) {
+                Swal.fire('Hata', 'Lütfen dosya seçiniz.', 'error');
+                return;
+            }
+
+            for (let file of files) {
+                let formData = new FormData();
+                formData.append("file", file);
+
+                try {
+                    const response = await fetch('/Admin/ProductImage/UploadImage', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        $('#poolPlaceholder').hide();
+                        photoCount++;
+                        $('#poolCounter').text(photoCount + " Görsel");
+
+                        const html = `
+                            <div class="col-4 col-md-3">
+                                <img src="${data.path}" class="draggable-img shadow-sm" draggable="true" ondragstart="drag(event)">
+                            </div>`;
+                        $('#imagePool').append(html);
+                    }
+                } catch (error) {
+                    console.error("Yükleme hatası:", error);
+                }
+            }
+            fileInput.value = ""; 
+        });
+    });
+
+    function drag(ev) {
+        const cleanPath = ev.target.src.replace(window.location.origin, "");
+        ev.dataTransfer.setData("text/plain", cleanPath);
+    }
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+        $(ev.currentTarget).addClass('drag-over');
+    }
+
+    function dragLeave(ev) {
+        $(ev.currentTarget).removeClass('drag-over');
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        $(ev.currentTarget).removeClass('drag-over');
+
+        const path = ev.dataTransfer.getData("text/plain");
+        const slotNum = $(ev.currentTarget).data('slot');
+
+        $(ev.currentTarget).find('.slot-content').html(`<img src="${path}" class="img-fill">`);
+
+        document.getElementById(`hidden_Image${slotNum}`).value = path;
+    }
+
+    function clearSlot(slotNum) {
+        $(`.img-slot[data-slot="${slotNum}"]`).find('.slot-content').html(`
+            <div class="text-muted opacity-50 text-center"><i class="fa-solid fa-plus fa-2x"></i><br><small>Bırak</small></div>
+        `);
+        document.getElementById(`hidden_Image${slotNum}`).value = "";
+    }
+</script>

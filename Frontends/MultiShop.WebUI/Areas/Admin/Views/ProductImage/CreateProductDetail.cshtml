@@ -1,0 +1,158 @@
+﻿@model MultiShop.DTOLayer.CatalogDTOs.ProductImageDTO.ResultProductImageDTO
+@{
+    ViewData["Title"] = "Görsel Yükle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<style>
+    .form-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        padding: 40px;
+    }
+
+    .upload-area {
+        border: 3px dashed #e0e0e0;
+        border-radius: 20px;
+        padding: 50px 20px;
+        text-align: center;
+        background: #fcfcfd;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f8f7ff;
+        }
+
+    .upload-icon {
+        font-size: 3.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 15px;
+    }
+
+    .preview-box {
+        border-radius: 12px;
+        border: 1px solid #dee2e6;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        transition: transform 0.2s;
+    }
+
+        .preview-box:hover {
+            transform: scale(1.03);
+        }
+
+    .preview-img-fill {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+    }
+
+    .slot-label {
+        background: #764ba2;
+        color: white;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 0 0 10px 10px;
+        display: inline-block;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-card">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-primary-subtle p-3 rounded-circle me-3">
+                        <i class="fa-solid fa-cloud-arrow-up fa-2x text-primary"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold text-dark mb-0">Yeni Görseller Ekle</h3>
+                        <p class="text-muted mb-0">Ürün galerisi için maksimum 4 adet yüksek kaliteli görsel seçin.</p>
+                    </div>
+                </div>
+
+                <form asp-action="CreateProductDetail" asp-controller="ProductImage" method="post" enctype="multipart/form-data">
+                    @* Gizli Alanlar *@
+                    <input type="hidden" asp-for="ProductId" />
+                    <input type="hidden" asp-for="ProductImageId" />
+                    <input type="hidden" asp-for="Image1" />
+                    <input type="hidden" asp-for="Image2" />
+                    <input type="hidden" asp-for="Image3" />
+                    <input type="hidden" asp-for="Image4" />
+
+                    <div class="upload-area mb-4" onclick="document.getElementById('fileInput').click()">
+                        <i class="fa-solid fa-images upload-icon"></i>
+                        <h5 class="fw-bold">Dosyaları Seçmek İçin Tıklayın</h5>
+                        <p class="text-muted small">PNG, JPG veya JPEG (Max. 4 dosya)</p>
+                        <input type="file" name="files" id="fileInput" class="d-none" multiple accept="image/*">
+                    </div>
+
+                    <div id="previewWrapper" class="d-none">
+                        <h6 class="fw-bold mb-3 text-secondary"><i class="fa-solid fa-eye me-2"></i>Seçilen Görsellerin Önizlemesi</h6>
+                        <div class="row g-3 mb-4" id="imagePreviewRow">
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info border-0 shadow-sm rounded-4 d-flex align-items-center">
+                        <i class="fa-solid fa-circle-info fa-2x me-3 opacity-50"></i>
+                        <div class="small">
+                            <strong>Bilgi:</strong> Yüklediğiniz görseller otomatik olarak optimize edilir. Eğer daha önce görsel varsa, yeni yükledikleriniz sırasıyla onların üzerine yazılır.
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-5">
+                        <button type="submit" class="btn btn-primary px-5 py-3 rounded-pill fw-bold border-0 shadow" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fa-solid fa-check-double me-2"></i>Görselleri Galeriye İşle
+                        </button>
+                        <a href="/Admin/ProductImage/Index/@Model.ProductId" class="btn btn-outline-secondary px-5 py-3 rounded-pill fw-bold">
+                            Vazgeç
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#fileInput').on('change', function (e) {
+            const row = $('#imagePreviewRow');
+            const wrapper = $('#previewWrapper');
+            row.empty();
+
+            const files = Array.from(e.target.files).slice(0, 4);
+
+            if (files.length > 0) {
+                wrapper.removeClass('d-none');
+                files.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        const template = `
+                            <div class="col-md-3">
+                                <div class="preview-box text-center">
+                                    <img src="${event.target.result}" class="preview-img-fill">
+                                    <div class="slot-label">SLOT ${index + 1}</div>
+                                </div>
+                            </div>
+                        `;
+                        row.append(template);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                wrapper.addClass('d-none');
+            }
+        });
+    });
+</script>

@@ -1,0 +1,92 @@
+﻿@model MultiShop.DTOLayer.CatalogDTOs.ProductDetailDTO.ResultProductDetailDTO
+@{
+    ViewData["Title"] = "Ürün Detay Yönetimi";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<style>
+    .detail-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        padding: 40px;
+        border: none;
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: #444;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+        .form-label i {
+            margin-right: 8px;
+            color: #764ba2;
+        }
+
+    .custom-input {
+        border-radius: 12px;
+        padding: 12px 15px;
+        border: 2px solid #eee;
+        transition: 0.3s;
+    }
+
+        .custom-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.1);
+        }
+
+    .gradient-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .gradient-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            color: white;
+        }
+</style>
+
+<div class="container py-4">
+    <div class="detail-card">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Ürün Detay Bilgileri</h2>
+                <p class="text-muted small">Ürüne ait açıklama ve teknik detayları buradan yönetebilirsiniz.</p>
+            </div>
+            <a href="/Admin/Product/Index" class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
+                <i class="fa-solid fa-arrow-left me-2"></i>Ürün Listesine Dön
+            </a>
+        </div>
+
+        <form asp-action="Index" method="post">
+            <input type="hidden" asp-for="ProductId" />
+            <input type="hidden" asp-for="ProductDetailId" />
+
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <label class="form-label"><i class="fa-solid fa-align-left"></i>Ürün Açıklaması</label>
+                    <textarea asp-for="ProductDescription" class="form-control custom-input" rows="4" placeholder="Ürün hakkında genel bilgi giriniz..."></textarea>
+                </div>
+
+                <div class="col-12 mb-5">
+                    <label class="form-label"><i class="fa-solid fa-circle-info"></i>Ürün Teknik Bilgileri (Özellikler)</label>
+                    <textarea asp-for="ProductInfo" class="form-control custom-input" rows="8" placeholder="Boyut, materyal, kullanım talimatları gibi teknik detayları giriniz..."></textarea>
+                </div>
+            </div>
+
+            <div class="pt-3 border-top d-flex gap-3">
+                <button type="submit" class="btn gradient-btn px-5 py-3 rounded-pill shadow-sm">
+                    <i class="fa-solid fa-save me-2"></i>@(string.IsNullOrEmpty(Model.ProductDetailId) ? "Detayları Kaydet" : "Değişiklikleri Güncelle")
+                </button>
+                <button type="button" onclick="location.reload()" class="btn btn-light px-5 py-3 rounded-pill border fw-bold">Vazgeç</button>
+            </div>
+        </form>
+    </div>
+</div>
