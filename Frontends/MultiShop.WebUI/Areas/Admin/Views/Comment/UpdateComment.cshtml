@@ -1,0 +1,67 @@
+﻿@model MultiShop.DTOLayer.CommentDTOs.UpdateCommentDTO
+@{
+    ViewData["Title"] = "Yorum Düzenle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<style>
+    .form-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 30px;
+        max-width: 700px;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+</style>
+
+<div class="form-card mx-auto">
+    <h3 class="fw-bold mb-3">Yorum Detaylarını Düzenle</h3>
+
+    <form method="post">
+        <input type="hidden" asp-for="UserCommentId" />
+        <input type="hidden" asp-for="ProductId" />
+        <input type="hidden" asp-for="CreatedDate" />
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Ad Soyad</label>
+                <input type="text" asp-for="NameSurname" class="form-control" readonly />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">E-Posta</label>
+                <input type="email" asp-for="Email" class="form-control" readonly />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Yorum İçeriği</label>
+            <textarea asp-for="CommnetDetail" class="form-control" rows="5"></textarea>
+        </div>
+
+        <div class="row align-items-center mb-4">
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Puan (1-5)</label>
+                <input type="number" asp-for="Rating" class="form-control" min="1" max="5" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label d-block fw-bold">Yayın Durumu</label>
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" asp-for="Status" id="statusSwitch">
+                    <label class="form-check-label" for="statusSwitch">Yorum Sitede Görünsün</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary px-4 rounded-pill">
+                <i class="fa-solid fa-save me-1"></i> Güncelle
+            </button>
+            <a href="/Admin/Comment/Index" class="btn btn-outline-secondary px-4 rounded-pill">Vazgeç</a>
+        </div>
+    </form>
+</div>

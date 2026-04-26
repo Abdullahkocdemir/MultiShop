@@ -4,3 +4,4 @@ Discount		--> 7002
 Order			--> 7003
 Cargo			--> 7004
 Basket			--> 7005
+Comment			--> 7006

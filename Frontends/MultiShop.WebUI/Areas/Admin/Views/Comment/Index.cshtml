@@ -1,0 +1,132 @@
+﻿@model List<MultiShop.DTOLayer.CommentDTOs.ResultCommentDTO>
+@{
+    ViewData["Title"] = "Yorum Yönetimi";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .comment-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 25px;
+        margin-top: 20px;
+    }
+
+    .status-active {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #c8e6c9;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .status-passive {
+        background-color: #ffebee;
+        color: #c62828;
+        border: 1px solid #ffcdd2;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .star-color {
+        color: #f1c40f;
+    }
+
+    .table-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+</style>
+
+<div class="comment-card">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 style="font-weight: 700;">Gelen Yorumlar</h3>
+            <p class="text-muted small">Ürünlere yapılan kullanıcı yorumlarını buradan yönetebilir, onaylayabilir veya silebilirsiniz.</p>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Kullanıcı</th>
+                    <th>Yorum</th>
+                    <th>Puan</th>
+                    <th>Tarih</th>
+                    <th>Durum</th>
+                    <th class="text-center">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    count++;
+                    <tr>
+                        <td><span class="badge bg-light text-dark">@count</span></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="/UserImages/user-icon.png" class="table-img" />
+                                <div>
+                                    <div class="fw-bold">@item.NameSurname</div>
+                                    <div class="text-muted small">@item.Email</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><small class="text-wrap" style="max-width: 300px; display: block;">@item.CommnetDetail</small></td>
+                        <td>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fa-star @(i <= item.Rating ? "fa-solid star-color" : "fa-regular text-muted")"></i>
+                            }
+                        </td>
+                        <td>@item.CreatedDate.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            <span class="@(item.Status ? "status-active" : "status-passive")">
+                                @(item.Status ? "Yayında" : "Gizli")
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <a href="/Admin/Comment/UpdateComment/@item.UserCommentId" class="btn btn-sm btn-outline-primary rounded-pill">
+                                <i class="fa-solid fa-pen"></i> Düzenle
+                            </a>
+                            <button onclick="deleteComment('@item.UserCommentId')" class="btn btn-sm btn-outline-danger rounded-pill">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function deleteComment(id) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Bu yorum kalıcı olarak silinecektir!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Evet, Sil',
+            cancelButtonText: 'Vazgeç'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/Admin/Comment/DeleteComment/" + id;
+            }
+        });
+    }
+</script>
