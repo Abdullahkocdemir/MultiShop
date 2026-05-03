@@ -5,7 +5,8 @@ using MultiShop.Catalog.Services.AboutService;
 
 namespace MultiShop.Catalog.Controllers
 {
-    [AllowAnonymous] // Geliştirme aşamasında erişim kolaylığı için, istersen kaldırabilirsin
+    //[AllowAnonymous] // Geliştirme aşamasında erişim kolaylığı için, istersen kaldırabilirsin
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AboutsController : ControllerBase
