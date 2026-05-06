@@ -1,3 +1,4 @@
+Ocelot			--> 5000
 Identity Server --> 5001
 Cataglog		--> 7001
 Discount		--> 7002
@@ -5,3 +6,5 @@ Order			--> 7003
 Cargo			--> 7004
 Basket			--> 7005
 Comment			--> 7006
+Payment			--> 7007
+Image			--> 7008

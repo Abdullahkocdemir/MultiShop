@@ -30,13 +30,9 @@ namespace MultiShop.IdentityServer.Controllers
                 var user = await _userManager.FindByNameAsync(userLoginDTO.UserName);
 
                 // Kullanıcı bilgilerini token generator'a gönderiyoruz
-                var model = new GetCheckAppUserViewModel
-                {
-                    Id = user.Id,
-                    UserName = user.UserName,
-                    Role = "Admin", // Not: Rol yönetimi eklendiğinde buradan dinamik çekilmeli
-                    IsExist = true
-                };
+                GetCheckAppUserViewModel model = new GetCheckAppUserViewModel();
+                model.UserName=userLoginDTO.UserName;
+                model.Id = user.Id;
 
                 var tokenResponse = JwtTokenGenerator.GenerateToken(model);
 
