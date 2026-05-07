@@ -1,32 +1,78 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MultiShop.DTOLayer.CatalogDTOs.ProductImageDTO;
-using Newtonsoft.Json;
-using System.Text;
+using MultiShop.WebUI.Services.CatalogService.ProductImageService;
 
 namespace MultiShop.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class ProductImageController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        public ProductImageController(IHttpClientFactory httpClientFactory)
+        private readonly IProductImageService _productImageService;
+
+        public ProductImageController(IProductImageService productImageService)
         {
-            _httpClientFactory = httpClientFactory;
+            _productImageService = productImageService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(string id)
         {
-            var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync($"https://localhost:7001/api/ProductImages/GetProductImagesByProductId?id={id}");
-            if (responseMessage.IsSuccessStatusCode)
+            try
             {
-                var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<ResultProductImageDTO>(jsonData);
-                return View(values);
+                // API'den ürün ID'sine göre görselleri çekiyoruz
+                var values = await _productImageService.GetByProductIdProductImageAsync(id);
+
+                // ResultDTO'ya eşleyerek View'a gönderiyoruz
+                var result = new ResultProductImageDTO
+                {
+                    ProductImageId = values.ProductImageId,
+                    Image1 = values.Image1,
+                    Image2 = values.Image2,
+                    Image3 = values.Image3,
+                    Image4 = values.Image4, // Modelinde Image4 varsa ekle
+                    ProductId = values.ProductId
+                };
+                return View(result);
+            }
+            catch
+            {
+                // Eğer ürünün henüz görseli yoksa boş form açıyoruz
+                return View(new ResultProductImageDTO { ProductId = id });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateProductDetail(ResultProductImageDTO model)
+        {
+            if (!string.IsNullOrEmpty(model.ProductImageId))
+            {
+                // Güncelleme Senaryosu
+                var updateDto = new UpdateProductImageDTO
+                {
+                    ProductImageId = model.ProductImageId,
+                    Image1 = model.Image1,
+                    Image2 = model.Image2,
+                    Image3 = model.Image3,
+                    Image4 = model.Image4,
+                    ProductId = model.ProductId
+                };
+                await _productImageService.UpdateProductImageAsync(updateDto);
+            }
+            else
+            {
+                // Yeni Kayıt Senaryosu
+                var createDto = new CreateProductImageDTO
+                {
+                    Image1 = model.Image1,
+                    Image2 = model.Image2,
+                    Image3 = model.Image3,
+                    Image4 = model.Image4,
+                    ProductId = model.ProductId
+                };
+                await _productImageService.CreateProductImageAsync(createDto);
             }
 
-            return View(new ResultProductImageDTO { ProductId = id });
+            return RedirectToAction("Index", "Product", new { area = "Admin" });
         }
 
         [HttpPost]
@@ -43,40 +89,8 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
             using var stream = new FileStream(saveLocation, FileMode.Create);
             await file.CopyToAsync(stream);
 
+            // View tarafındaki AJAX'ın beklediği path formatı
             return Ok(new { path = "/images/ProductImages/" + imagename });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateProductDetail(ResultProductImageDTO model)
-        {
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(model);
-            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-            HttpResponseMessage response;
-
-            if (!string.IsNullOrEmpty(model.ProductImageId))
-            {
-                response = await client.PutAsync("https://localhost:7001/api/ProductImages", content);
-            }
-            else
-            {
-                response = await client.PostAsync("https://localhost:7001/api/ProductImages", content);
-            }
-
-            if (response.IsSuccessStatusCode)
-            {
-                return RedirectToAction("Index", "Product", new { area = "Admin" });
-            }
-            return View(model);
-        }
-        [HttpPost]
-        public async Task<IActionResult> DeleteProductImage(string id)
-        {
-            var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.DeleteAsync($"https://localhost:7001/api/ProductImages/{id}");
-            if (responseMessage.IsSuccessStatusCode) return Ok();
-            return BadRequest();
         }
     }
 }

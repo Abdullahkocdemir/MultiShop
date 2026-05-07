@@ -1,60 +1,71 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MultiShop.DTOLayer.CatalogDTOs.ProductDetailDTO;
-using Newtonsoft.Json;
-using System.Text;
+using MultiShop.WebUI.Services.CatalogService.IProductDetailService;
 
 namespace MultiShop.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class ProductDetailController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        public ProductDetailController(IHttpClientFactory httpClientFactory)
+        private readonly IProductDetailService _productDetailService;
+
+        public ProductDetailController(IProductDetailService productDetailService)
         {
-            _httpClientFactory = httpClientFactory;
+            _productDetailService = productDetailService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(string id)
         {
-            ViewBag.v1 = id; // Ürün ID'sini saklayalım
-            var client = _httpClientFactory.CreateClient();
-            // API'den ürün ID'sine göre detayı getiren endpoint'i çağırıyoruz
-            var responseMessage = await client.GetAsync($"https://localhost:7001/api/ProductDetails/GetProductDetailByProductId?id={id}");
-
-            if (responseMessage.IsSuccessStatusCode)
+            ViewBag.v1 = id;
+            try
             {
-                var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<ResultProductDetailDTO>(jsonData);
-                return View(values);
+                var values = await _productDetailService.GetByProductIdProductDetailAsync(id);
+                // Servisten dönen GetByIdProductDetailDTO'yu View'ın beklediği Result modeline çevirelim
+                var result = new ResultProductDetailDTO
+                {
+                    ProductDetailId = values.ProductDetailId,
+                    ProductDescription = values.ProductDescription,
+                    ProductInfo = values.ProductInfo,
+                    ProductId = values.ProductId
+                };
+                return View(result);
             }
-
-            return View(new ResultProductDetailDTO { ProductId = id });
+            catch
+            {
+                // Eğer detay henüz yoksa boş bir model döner
+                return View(new ResultProductDetailDTO { ProductId = id });
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Index(ResultProductDetailDTO model)
         {
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(model);
-            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-            HttpResponseMessage response;
-
             if (!string.IsNullOrEmpty(model.ProductDetailId))
             {
-                response = await client.PutAsync("https://localhost:7001/api/ProductDetails", content);
+                // Güncelleme işlemi için UpdateDTO eşlemesi
+                var updateDto = new UpdateProductDetailDTO
+                {
+                    ProductDetailId = model.ProductDetailId,
+                    ProductDescription = model.ProductDescription,
+                    ProductInfo = model.ProductInfo,
+                    ProductId = model.ProductId
+                };
+                await _productDetailService.UpdateProductDetailAsync(updateDto);
             }
             else
             {
-                response = await client.PostAsync("https://localhost:7001/api/ProductDetails", content);
+                // Ekleme işlemi için CreateDTO eşlemesi
+                var createDto = new CreateProductDetailDTO
+                {
+                    ProductDescription = model.ProductDescription,
+                    ProductInfo = model.ProductInfo,
+                    ProductId = model.ProductId
+                };
+                await _productDetailService.CreateProductDetailAsync(createDto);
             }
 
-            if (response.IsSuccessStatusCode)
-            {
-                return RedirectToAction("Index", "Product", new { area = "Admin" });
-            }
-            return View(model);
+            return RedirectToAction("Index", "Product", new { area = "Admin" });
         }
     }
 }

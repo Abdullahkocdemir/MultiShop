@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MultiShop.WebUI.Handlers;
 using MultiShop.WebUI.Services;
+using MultiShop.WebUI.Services.CatalogService.CategoryService;
+using MultiShop.WebUI.Services.CatalogService.IProductDetailService;
+using MultiShop.WebUI.Services.CatalogService.ProductImageService;
+using MultiShop.WebUI.Services.CatalogService.ProductService;
 using MultiShop.WebUI.Services.Concrete;
 using MultiShop.WebUI.Services.Interfaces;
 using MultiShop.WebUI.Settings;
@@ -39,6 +44,13 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IIdentityService, IdentityService>();
+//builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddClientCredentialsTokenManagement();
+builder.Services.AddScoped<ResourceOwnerPasswordTokenHandler>();
+
+builder.Services.AddHttpClient<IClientCredentialTokenService, ClientCredentialTokenService>();
+
 //builder.Services.AddHttpClient<IIdentityService, IdentityService>(opt =>
 //{
 //    opt.BaseAddress = new Uri("https://localhost:5001");
@@ -46,12 +58,50 @@ builder.Services.AddScoped<IIdentityService, IdentityService>();
 //{
 //    return new HttpClientHandler
 //    {
-//        // Geliþtirme ortamýnda SSL sertifika hatalarýný görmezden gel
 //        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
 //    };
 //});
 
 builder.Services.Configure<ClientSettings>(builder.Configuration.GetSection("ClientSettings"));
+builder.Services.Configure<ServiceApiSettings>(builder.Configuration.GetSection("ServiceApiSettings"));
+
+
+
+var values = builder.Configuration.GetSection("ServiceApiSettings").Get<ServiceApiSettings>();
+builder.Services.AddHttpClient<IUserService, UserService>(opt =>
+{
+    opt.BaseAddress = new Uri(values.IdentityServerUrl);
+}).AddHttpMessageHandler<ResourceOwnerPasswordTokenHandler>();
+
+builder.Services.AddHttpClient<ICategoryService, CategoryService>(opt =>
+{
+    opt.BaseAddress = new Uri($"{values.OcelotUrl}/{values.Catalog.Path}");
+}).AddHttpMessageHandler<ClientCredentialTokenHandler>();
+
+
+builder.Services.AddHttpClient<IProductService, ProductService>(opt =>
+{
+    opt.BaseAddress = new Uri($"{values.OcelotUrl}/{values.Catalog.Path}");
+}).AddHttpMessageHandler<ClientCredentialTokenHandler>();
+
+
+
+builder.Services.AddHttpClient<IProductDetailService, ProductDetailService>(opt =>
+{
+    opt.BaseAddress = new Uri($"{values.OcelotUrl}/{values.Catalog.Path}");
+}).AddHttpMessageHandler<ClientCredentialTokenHandler>();
+
+
+
+builder.Services.AddHttpClient<IProductImageService, ProductImageService>(opt =>
+{
+    opt.BaseAddress = new Uri($"{values.OcelotUrl}/{values.Catalog.Path}");
+}).AddHttpMessageHandler<ClientCredentialTokenHandler>();
+
+
+
+
+builder.Services.AddTransient<ClientCredentialTokenHandler>();
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
