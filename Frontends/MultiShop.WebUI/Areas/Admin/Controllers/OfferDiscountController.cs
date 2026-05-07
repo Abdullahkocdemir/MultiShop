@@ -1,22 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MultiShop.DTOLayer.CatalogDTOs.OfferDiscountDTO;
-using Newtonsoft.Json;
-using System.Text;
+using MultiShop.WebUI.Services.CatalogService.OfferService;
 
 namespace MultiShop.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class OfferDiscountController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IOfferService _offerService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public OfferDiscountController(IHttpClientFactory httpClientFactory, IWebHostEnvironment webHostEnvironment)
+        public OfferDiscountController(IOfferService offerService, IWebHostEnvironment webHostEnvironment)
         {
-            _httpClientFactory = httpClientFactory;
+            _offerService = offerService;
             _webHostEnvironment = webHostEnvironment;
         }
 
+        #region Yardımcı Metod (Dosya Yükleme)
         private async Task<string> UploadImageAsync(IFormFile imageFile)
         {
             if (imageFile == null || imageFile.Length == 0) return null;
@@ -35,18 +35,12 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
             }
             return "/OfferImages/" + imageName;
         }
+        #endregion
 
         public async Task<IActionResult> Index()
         {
-            var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync("https://localhost:7001/api/OfferDiscounts");
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<List<ResultOfferDiscountDTO>>(jsonData);
-                return View(values);
-            }
-            return View();
+            var values = await _offerService.GetAllOfferDiscountAsync();
+            return View(values);
         }
 
         [HttpGet]
@@ -58,27 +52,25 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
             var uploadedPath = await UploadImageAsync(ImageFile);
             createOfferDiscountDTO.ImageUrl = uploadedPath ?? "/OfferImages/no-image.png";
 
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(createOfferDiscountDTO);
-            var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await client.PostAsync("https://localhost:7001/api/OfferDiscounts", stringContent);
-
-            if (responseMessage.IsSuccessStatusCode) return RedirectToAction("Index");
-            return View();
+            await _offerService.CreateOfferDiscountAsync(createOfferDiscountDTO);
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
         public async Task<IActionResult> UpdateOfferDiscount(string id)
         {
-            var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync($"https://localhost:7001/api/OfferDiscounts/{id}");
-            if (responseMessage.IsSuccessStatusCode)
+            var values = await _offerService.GetByIdOfferDiscountAsync(id);
+
+            // Mapping: GetByIdOfferDiscountDTO -> UpdateOfferDiscountDTO
+            var updateValue = new UpdateOfferDiscountDTO
             {
-                var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<UpdateOfferDiscountDTO>(jsonData);
-                return View(values);
-            }
-            return View();
+                OfferDiscountId = values.OfferDiscountId,
+                Title = values.Title,
+                SubTitle = values.SubTitle,
+                ImageUrl = values.ImageUrl
+            };
+
+            return View(updateValue);
         }
 
         [HttpPost]
@@ -87,19 +79,13 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
             var uploadedPath = await UploadImageAsync(ImageFile);
             if (uploadedPath != null) updateOfferDiscountDTO.ImageUrl = uploadedPath;
 
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(updateOfferDiscountDTO);
-            var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await client.PutAsync("https://localhost:7001/api/OfferDiscounts", stringContent);
-
-            if (responseMessage.IsSuccessStatusCode) return RedirectToAction("Index");
-            return View();
+            await _offerService.UpdateOfferDiscountAsync(updateOfferDiscountDTO);
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> DeleteOfferDiscount(string id)
         {
-            var client = _httpClientFactory.CreateClient();
-            await client.DeleteAsync($"https://localhost:7001/api/OfferDiscounts?id={id}");
+            await _offerService.DeleteOfferDiscountAsync(id);
             return RedirectToAction("Index");
         }
     }

@@ -1,22 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MultiShop.DTOLayer.CatalogDTOs.BrandDTO;
-using Newtonsoft.Json;
-using System.Text;
+using MultiShop.WebUI.Services.CatalogService.BrandService;
 
 namespace MultiShop.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class BrandController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IBrandService _brandService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public BrandController(IHttpClientFactory httpClientFactory, IWebHostEnvironment webHostEnvironment)
+        public BrandController(IBrandService brandService, IWebHostEnvironment webHostEnvironment)
         {
-            _httpClientFactory = httpClientFactory;
+            _brandService = brandService;
             _webHostEnvironment = webHostEnvironment;
         }
 
+        #region Yardımcı Metod (Dosya Yükleme)
         private async Task<string> UploadImageAsync(IFormFile imageFile)
         {
             if (imageFile == null || imageFile.Length == 0) return null;
@@ -35,18 +35,12 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
             }
             return "/BrandImages/" + imageName;
         }
+        #endregion
 
         public async Task<IActionResult> Index()
         {
-            var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync("https://localhost:7001/api/Brands");
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<List<ResultBrandDTO>>(jsonData);
-                return View(values);
-            }
-            return View();
+            var values = await _brandService.GetAllBrandAsync();
+            return View(values);
         }
 
         [HttpGet]
@@ -58,58 +52,42 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
             var uploadedPath = await UploadImageAsync(ImageFile);
             createBrandDTO.ImageUrl = uploadedPath ?? "/BrandImages/no-brand.png";
 
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(createBrandDTO);
-            var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await client.PostAsync("https://localhost:7001/api/Brands", stringContent);
-
-            if (responseMessage.IsSuccessStatusCode) return RedirectToAction("Index");
-            return View();
+            await _brandService.CreateBrandAsync(createBrandDTO);
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
         public async Task<IActionResult> UpdateBrand(string id)
         {
-            var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync($"https://localhost:7001/api/Brands/{id}");
-            if (responseMessage.IsSuccessStatusCode)
+            var values = await _brandService.GetByIdBrandAsync(id);
+
+            // Mapping: GetByIdBrandDTO -> UpdateBrandDTO
+            var updateValue = new UpdateBrandDTO
             {
-                var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<UpdateBrandDTO>(jsonData);
-                return View(values);
-            }
-            return View();
+                BrandId = values.BrandId,
+                BrandName = values.BrandName,
+                ImageUrl = values.ImageUrl
+            };
+
+            return View(updateValue);
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateBrand(UpdateBrandDTO updateBrandDTO, IFormFile ImageFile)
         {
-            // Yeni bir resim seçilmişse yükle
             var uploadedPath = await UploadImageAsync(ImageFile);
             if (uploadedPath != null)
             {
                 updateBrandDTO.ImageUrl = uploadedPath;
             }
 
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(updateBrandDTO);
-            var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-            // API'deki [HttpPut] metoduna istek atıyoruz
-            var responseMessage = await client.PutAsync("https://localhost:7001/api/Brands", stringContent);
-
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                return RedirectToAction("Index");
-            }
-
-            return View(updateBrandDTO);
+            await _brandService.UpdateBrandAsync(updateBrandDTO);
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> DeleteBrand(string id)
         {
-            var client = _httpClientFactory.CreateClient();
-            await client.DeleteAsync($"https://localhost:7001/api/Brands?id={id}");
+            await _brandService.DeleteBrandAsync(id);
             return RedirectToAction("Index");
         }
     }

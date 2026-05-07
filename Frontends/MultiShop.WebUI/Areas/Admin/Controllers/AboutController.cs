@@ -1,31 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MultiShop.DTOLayer.CatalogDTOs.AboutDTO;
-using Newtonsoft.Json;
-using System.Text;
+using MultiShop.WebUI.Services.CatalogService.AboutService;
 
 namespace MultiShop.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class AboutController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IAboutService _aboutService;
 
-        public AboutController(IHttpClientFactory httpClientFactory)
+        public AboutController(IAboutService aboutService)
         {
-            _httpClientFactory = httpClientFactory;
+            _aboutService = aboutService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync("https://localhost:7001/api/Abouts");
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<List<ResultAboutDTO>>(jsonData);
-                return View(values);
-            }
-            return View();
+            var values = await _aboutService.GetAllAboutAsync();
+            return View(values);
         }
 
         [HttpGet]
@@ -34,45 +26,38 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAbout(CreateAboutDTO createAboutDTO)
         {
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(createAboutDTO);
-            var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await client.PostAsync("https://localhost:7001/api/Abouts", stringContent);
-
-            if (responseMessage.IsSuccessStatusCode) return RedirectToAction("Index");
-            return View();
+            await _aboutService.CreateAboutAsync(createAboutDTO);
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
         public async Task<IActionResult> UpdateAbout(string id)
         {
-            var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync($"https://localhost:7001/api/Abouts/{id}");
-            if (responseMessage.IsSuccessStatusCode)
+            var values = await _aboutService.GetByIdIAboutAsync(id);
+
+            // Senin DTO yapına uygun eşleme (Mapping):
+            var updateValue = new UpdateAboutDTO
             {
-                var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<UpdateAboutDTO>(jsonData);
-                return View(values);
-            }
-            return View();
+                AboutId = values.AboutId,
+                Description = values.Description,
+                Address = values.Address,
+                Email = values.Email,
+                Phone = values.Phone
+            };
+
+            return View(updateValue);
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateAbout(UpdateAboutDTO updateAboutDTO)
         {
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(updateAboutDTO);
-            var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await client.PutAsync("https://localhost:7001/api/Abouts", stringContent);
-
-            if (responseMessage.IsSuccessStatusCode) return RedirectToAction("Index");
-            return View();
+            await _aboutService.UpdateAboutAsync(updateAboutDTO);
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> DeleteAbout(string id)
         {
-            var client = _httpClientFactory.CreateClient();
-            await client.DeleteAsync($"https://localhost:7001/api/Abouts?id={id}");
+            await _aboutService.DeleteAboutAsync(id);
             return RedirectToAction("Index");
         }
     }

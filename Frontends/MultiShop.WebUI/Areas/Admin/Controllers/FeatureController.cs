@@ -1,30 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MultiShop.DTOLayer.CatalogDTOs.FeatureDTO;
-using Newtonsoft.Json;
-using System.Text;
+using MultiShop.WebUI.Services.CatalogService.FeatureService;
 
 namespace MultiShop.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class FeatureController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        public FeatureController(IHttpClientFactory httpClientFactory)
+        private readonly IFeatureService _featureService;
+
+        public FeatureController(IFeatureService featureService)
         {
-            _httpClientFactory = httpClientFactory;
+            _featureService = featureService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync("https://localhost:7001/api/Features");
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<List<ResultFeatureDTO>>(jsonData);
-                return View(values);
-            }
-            return View(new List<ResultFeatureDTO>());
+            var values = await _featureService.GetAllFeatureAsync();
+            return View(values);
         }
 
         [HttpGet]
@@ -33,41 +26,36 @@ namespace MultiShop.WebUI.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateFeature(CreateFeatureDTO createFeatureDTO)
         {
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(createFeatureDTO);
-            StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            await client.PostAsync("https://localhost:7001/api/Features", stringContent);
+            await _featureService.CreateFeatureAsync(createFeatureDTO);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public async Task<IActionResult> UpdateFeature(string id)
         {
-            var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync($"https://localhost:7001/api/Features/{id}");
-            if (responseMessage.IsSuccessStatusCode)
+            var values = await _featureService.GetByIdFeatureAsync(id);
+
+            // Mapping: GetByIdFeatureDTO -> UpdateFeatureDTO
+            var updateValue = new UpdateFeatureDTO
             {
-                var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<UpdateFeatureDTO>(jsonData);
-                return View(values);
-            }
-            return View();
+                FeatureId = values.FeatureId,
+                Title = values.Title,
+                Icon = values.Icon
+            };
+
+            return View(updateValue);
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateFeature(UpdateFeatureDTO updateFeatureDTO)
         {
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(updateFeatureDTO);
-            StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            await client.PutAsync("https://localhost:7001/api/Features", stringContent);
+            await _featureService.UpdateFeatureAsync(updateFeatureDTO);
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> DeleteFeature(string id)
         {
-            var client = _httpClientFactory.CreateClient();
-            await client.DeleteAsync($"https://localhost:7001/api/Features?id={id}");
+            await _featureService.DeleteFeatureAsync(id);
             return RedirectToAction("Index");
         }
     }
