@@ -1,12 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MultiShop.WebUI.Services.CatalogService.BrandService;
+using System.Threading.Tasks;
 
 namespace MultiShop.WebUI.ViewComponents.DefaultComponentPartials
 {
     public class _VendorDefaultViewComponentPartial : ViewComponent
     {
-        public IViewComponentResult Invoke()
+        private readonly IBrandService _brandService;
+
+        public _VendorDefaultViewComponentPartial(IBrandService brandService)
         {
-            return View();
+            _brandService = brandService;
+        }
+
+        public async Task<IViewComponentResult> InvokeAsync()
+        {
+            var rvalues=await _brandService.GetAllBrandAsync();
+            return View(rvalues);
         }
     }
 }

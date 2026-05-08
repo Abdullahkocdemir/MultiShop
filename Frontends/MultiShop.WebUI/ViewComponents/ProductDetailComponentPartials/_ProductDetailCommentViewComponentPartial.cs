@@ -7,6 +7,7 @@ namespace MultiShop.WebUI.ViewComponents.ProductDetailComponentPartials
     public class _ProductDetailCommentViewComponentPartial : ViewComponent
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        //private readonly IComme
         public _ProductDetailCommentViewComponentPartial(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
@@ -19,7 +20,7 @@ namespace MultiShop.WebUI.ViewComponents.ProductDetailComponentPartials
 
             var client = _httpClientFactory.CreateClient();
             // Parametre isminin productId=id olduğundan emin ol
-            var responseMessage = await client.GetAsync($"https://localhost:7006/api/Comments/GetCommentByProductId/{id}");
+            var responseMessage = await client.GetAsync($"http://localhost:7006/api/Comments/GetCommentByProductId/{id}");
 
             if (responseMessage.IsSuccessStatusCode)
             {

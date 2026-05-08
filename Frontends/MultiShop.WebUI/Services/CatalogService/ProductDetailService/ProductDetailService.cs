@@ -1,4 +1,5 @@
 ﻿using MultiShop.DTOLayer.CatalogDTOs.ProductDetailDTO;
+using Newtonsoft.Json;
 
 namespace MultiShop.WebUI.Services.CatalogService.IProductDetailService
 {
@@ -20,7 +21,19 @@ namespace MultiShop.WebUI.Services.CatalogService.IProductDetailService
         public async Task<GetByIdProductDetailDTO> GetByIdProductDetailAsync(string id)
         {
             var response = await _httpClient.GetAsync($"productdetails/{id}");
-            return await response.Content.ReadFromJsonAsync<GetByIdProductDetailDTO>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                if (string.IsNullOrEmpty(content))
+                {
+                    return new GetByIdProductDetailDTO(); 
+                }
+
+                return JsonConvert.DeserializeObject<GetByIdProductDetailDTO>(content);
+            }
+
+            return new GetByIdProductDetailDTO();
         }
 
         public async Task<GetByIdProductDetailDTO> GetByProductIdProductDetailAsync(string id)

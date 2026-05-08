@@ -27,27 +27,28 @@ namespace MultiShop.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(CreateCommentDTO createCommentDto)
         {
-            createCommentDto.NameSurname = "Abdullah Koçdemir";
-            createCommentDto.Email = "kcdmirapo96@gmail.com";
-            createCommentDto.Status = true;
-            createCommentDto.CreatedDate = DateTime.Now; // API tarafında da set edilebilir
-            createCommentDto.ImageUrl = "string";
-            createCommentDto.UserCommentId = "string";
+            return View();
+            //createCommentDto.NameSurname = "Abdullah Koçdemir";
+            //createCommentDto.Email = "kcdmirapo96@gmail.com";
+            //createCommentDto.Status = true;
+            //createCommentDto.CreatedDate = DateTime.Now; // API tarafında da set edilebilir
+            //createCommentDto.ImageUrl = "string";
+            //createCommentDto.UserCommentId = "string";
 
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(createCommentDto);
-            StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            //var client = _httpClientFactory.CreateClient();
+            //var jsonData = JsonConvert.SerializeObject(createCommentDto);
+            //StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
-            var responseMessage = await client.PostAsync("https://localhost:7006/api/Comments", stringContent);
+            //var responseMessage = await client.PostAsync("https://localhost:7006/api/Comments", stringContent);
 
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                return RedirectToAction("ProductDetail", "ProductList", new { id = createCommentDto.ProductId });
-            }
+            //if (responseMessage.IsSuccessStatusCode)
+            //{
+            //    return RedirectToAction("ProductDetail", "ProductList", new { id = createCommentDto.ProductId });
+            //}
 
-            // Hata durumunda boş View() dönmek yerine yine detay sayfasına yönlendirin.
-            // İsterseniz buraya bir hata mesajı (TempData) ekleyebilirsiniz.
-            return RedirectToAction("ProductDetail", "ProductList", new { id = createCommentDto.ProductId });
+            //// Hata durumunda boş View() dönmek yerine yine detay sayfasına yönlendirin.
+            //// İsterseniz buraya bir hata mesajı (TempData) ekleyebilirsiniz.
+            //return RedirectToAction("ProductDetail", "ProductList", new { id = createCommentDto.ProductId });
         }
     }
 }

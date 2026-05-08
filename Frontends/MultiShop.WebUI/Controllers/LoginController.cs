@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MultiShop.DTOLayer.IdentityDTOs.LoginDTO;
-using MultiShop.WebUI.Services;
 using MultiShop.WebUI.Services.Interfaces;
 
 namespace MultiShop.WebUI.Controllers

@@ -25,10 +25,23 @@ namespace MultiShop.WebUI.Services.CatalogService.ProductImageService
 
         public async Task<GetByIdProductImageDTO> GetByProductIdProductImageAsync(string id)
         {
-            // API endpoint: GetProductImagesByProductId?id=...
-            var response = await _httpClient.GetAsync($"productimages/GetProductImagesByProductId?id={id}");
-            return await response.Content.ReadFromJsonAsync<GetByIdProductImageDTO>();
+            var response = await _httpClient.GetAsync($"productimages/GetProductImagesByProductId/{id}"); // URL yapısına dikkat!
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<GetByIdProductImageDTO>();
+            }
+
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new Exception($"API Hatası: {response.StatusCode} - İçerik: {errorContent}");
         }
+        //public async Task<GetByIdProductImageDTO> GetByProductIdProductImageAsync(string id)
+        //{
+        //    // API endpoint: GetProductImagesByProductId?id=...
+        //    var response = await _httpClient.GetAsync($"productimages/GetProductImagesByProductId?id={id}");
+        //    var values= await response.Content.ReadFromJsonAsync<GetByIdProductImageDTO>();
+        //    return values;
+        //}
 
         public async Task CreateProductImageAsync(CreateProductImageDTO createProductImageDTO)
         {

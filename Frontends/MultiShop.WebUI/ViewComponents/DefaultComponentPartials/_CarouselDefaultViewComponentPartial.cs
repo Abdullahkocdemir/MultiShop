@@ -1,29 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MultiShop.DTOLayer.CatalogDTOs.FeatureSliderDTO;
-using Newtonsoft.Json;
+using MultiShop.WebUI.Services.CatalogService.FeatureSliderService;
 
 namespace MultiShop.WebUI.ViewComponents.DefaultComponentPartials
 {
     public class _CarouselDefaultViewComponentPartial : ViewComponent
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IFeatureSliderService _featureSliderService;
 
-        public _CarouselDefaultViewComponentPartial(IHttpClientFactory httpClientFactory)
+        public _CarouselDefaultViewComponentPartial(IFeatureSliderService featureSliderService)
         {
-            _httpClientFactory = httpClientFactory;
+            _featureSliderService = featureSliderService;
         }
-
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var client = _httpClientFactory.CreateClient();
-            var responseMessage = await client.GetAsync("https://localhost:7001/api/FeatureSliders");
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                var jsonData = await responseMessage.Content.ReadAsStringAsync();
-                var values = JsonConvert.DeserializeObject<List<ResultFeatureSliderDTO>>(jsonData);
-                return View(values);
-            }
-            return View();
+            var values = await _featureSliderService.GetAllFeatureSliderAsync();
+            return View(values);
         }
     }
 }

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MultiShop.WebUI.Handlers;
-using MultiShop.WebUI.Services;
 using MultiShop.WebUI.Services.CatalogService.AboutService;
 using MultiShop.WebUI.Services.CatalogService.BrandService;
 using MultiShop.WebUI.Services.CatalogService.CategoryService;
@@ -57,17 +56,6 @@ builder.Services.AddClientCredentialsTokenManagement();
 builder.Services.AddScoped<ResourceOwnerPasswordTokenHandler>();
 
 builder.Services.AddHttpClient<IClientCredentialTokenService, ClientCredentialTokenService>();
-
-//builder.Services.AddHttpClient<IIdentityService, IdentityService>(opt =>
-//{
-//    opt.BaseAddress = new Uri("https://localhost:5001");
-//}).ConfigurePrimaryHttpMessageHandler(() =>
-//{
-//    return new HttpClientHandler
-//    {
-//        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
-//    };
-//});
 
 builder.Services.Configure<ClientSettings>(builder.Configuration.GetSection("ClientSettings"));
 builder.Services.Configure<ServiceApiSettings>(builder.Configuration.GetSection("ServiceApiSettings"));
