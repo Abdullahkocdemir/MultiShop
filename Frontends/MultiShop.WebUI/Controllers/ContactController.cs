@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System.Text;
+using MultiShop.DTOLayer.CatalogDTOs.ContactDTO; // DTO namespace'ine dikkat
+using MultiShop.WebUI.Services.CatalogService.ContactService;
 
 namespace MultiShop.WebUI.Controllers
 {
     public class ContactController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IContactService _contactService;
 
-        public ContactController(IHttpClientFactory httpClientFactory)
+        public ContactController(IContactService contactService)
         {
-            _httpClientFactory = httpClientFactory;
+            _contactService = contactService;
         }
 
         [HttpGet]
@@ -20,34 +20,15 @@ namespace MultiShop.WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(CreateContactDto createContactDto)
+        public async Task<IActionResult> Index(CreateContactDTO createContactDTO)
         {
-            createContactDto.SendDate = DateTime.Now;
-            createContactDto.IsRead = false;
+            createContactDTO.SendDate = DateTime.Now;
+            createContactDTO.IsRead = false;
+            await _contactService.CreateContactAsync(createContactDTO);
 
-            var client = _httpClientFactory.CreateClient();
-            var jsonData = JsonConvert.SerializeObject(createContactDto);
-            StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            TempData["MessageSent"] = true;
 
-            var responseMessage = await client.PostAsync("https://localhost:7001/api/Contacts", stringContent);
-
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                // Mesajın başarıyla gönderildiğini View tarafına bildiriyoruz
-                TempData["MessageSent"] = true;
-                return RedirectToAction("Index");
-            }
-
-            return View();
+            return RedirectToAction("Index");
         }
     }
-}
-public class CreateContactDto
-{
-    public string NameSurname { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string Subject { get; set; } = string.Empty;
-    public string Message { get; set; } = string.Empty;
-    public bool IsRead { get; set; } = false;
-    public DateTimeOffset SendDate { get; set; }
 }
